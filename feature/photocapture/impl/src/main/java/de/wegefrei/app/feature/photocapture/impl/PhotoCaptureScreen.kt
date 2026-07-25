@@ -34,6 +34,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 
@@ -70,6 +72,7 @@ internal fun PhotoCaptureScreen(
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
+    var previewUri by remember { mutableStateOf<Uri?>(null) }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = remainingSlots.coerceAtLeast(2)),
@@ -103,7 +106,11 @@ internal fun PhotoCaptureScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     items(items = photoUris, key = { it.toString() }) { uri ->
-                        PhotoThumbnail(uri = uri, onRemove = { onPhotoRemoved(uri) })
+                        PhotoThumbnail(
+                            uri = uri,
+                            onClick = { previewUri = uri },
+                            onRemove = { onPhotoRemoved(uri) },
+                        )
                     }
                 }
             }
@@ -129,11 +136,17 @@ internal fun PhotoCaptureScreen(
             }
         }
     }
+
+    val previewedUri = previewUri
+    if (previewedUri != null) {
+        PhotoPreviewDialog(uri = previewedUri, onDismiss = { previewUri = null })
+    }
 }
 
 @Composable
 private fun PhotoThumbnail(
     uri: Uri,
+    onClick: () -> Unit,
     onRemove: () -> Unit,
 ) {
     Box(modifier = Modifier.size(96.dp)) {
@@ -143,7 +156,8 @@ private fun PhotoThumbnail(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(8.dp)),
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(onClick = onClick),
         )
         Box(
             modifier = Modifier
@@ -160,6 +174,47 @@ private fun PhotoThumbnail(
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 2.dp),
             )
+        }
+    }
+}
+
+@Composable
+private fun PhotoPreviewDialog(
+    uri: Uri,
+    onDismiss: () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .clickable(onClick = onDismiss),
+        ) {
+            AsyncImage(
+                model = uri,
+                contentDescription = "Fotovorschau",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .clickable(onClick = onDismiss),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "×",
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+            }
         }
     }
 }
