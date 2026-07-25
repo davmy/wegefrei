@@ -1,0 +1,31 @@
+# Claude Code local tooling
+.claude/
+
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.DS_Store
+
+# Signing
+*.jks
+*.keystore
+
+# Generated
+captures/
+.externalNativeBuild/
+.cxx/
+
+# APK / bundle output
+*.apk
+*.aab
+
+# Log files
+*.log
