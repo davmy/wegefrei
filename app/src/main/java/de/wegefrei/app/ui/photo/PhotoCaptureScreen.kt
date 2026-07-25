@@ -5,11 +5,19 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,6 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
@@ -30,7 +41,7 @@ import coil3.compose.AsyncImage
 fun PhotoCaptureRoute(
     viewModel: PhotoCaptureViewModel = viewModel(),
 ) {
-    val selectedPhotoUri by viewModel.selectedPhotoUri.collectAsState()
+    val photoUris by viewModel.photoUris.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
 
     if (showCamera) {
@@ -42,22 +53,27 @@ fun PhotoCaptureRoute(
         )
     } else {
         PhotoCaptureScreen(
-            selectedPhotoUri = selectedPhotoUri,
-            onImagePicked = viewModel::onImagePicked,
+            photoUris = photoUris,
+            onImagesPicked = viewModel::onImagesPicked,
             onTakePhotoRequested = { showCamera = true },
+            onPhotoRemoved = viewModel::onPhotoRemoved,
         )
     }
 }
 
 @Composable
 fun PhotoCaptureScreen(
-    selectedPhotoUri: Uri?,
-    onImagePicked: (Uri) -> Unit,
+    photoUris: List<Uri>,
+    onImagesPicked: (List<Uri>) -> Unit,
     onTakePhotoRequested: () -> Unit,
+    onPhotoRemoved: (Uri) -> Unit,
 ) {
+    val remainingSlots = MAX_PHOTOS - photoUris.size
+    val canAddMore = remainingSlots > 0
+
     val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> uri?.let(onImagePicked) },
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = remainingSlots.coerceAtLeast(2)),
+        onResult = onImagesPicked,
     )
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
@@ -75,16 +91,21 @@ fun PhotoCaptureScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = "Foto des Falschparkers",
+                text = "Fotos des Falschparkers",
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            if (selectedPhotoUri != null) {
-                AsyncImage(
-                    model = selectedPhotoUri,
-                    contentDescription = "Ausgewähltes Foto",
+            Text(text = "${photoUris.size} / $MAX_PHOTOS Fotos")
+
+            if (photoUris.isNotEmpty()) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth(),
-                )
+                ) {
+                    items(items = photoUris, key = { it.toString() }) { uri ->
+                        PhotoThumbnail(uri = uri, onRemove = { onPhotoRemoved(uri) })
+                    }
+                }
             }
 
             Button(
@@ -93,6 +114,7 @@ fun PhotoCaptureScreen(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                     )
                 },
+                enabled = canAddMore,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Aus Galerie wählen")
@@ -100,10 +122,44 @@ fun PhotoCaptureScreen(
 
             Button(
                 onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
+                enabled = canAddMore,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Foto aufnehmen")
             }
+        }
+    }
+}
+
+@Composable
+private fun PhotoThumbnail(
+    uri: Uri,
+    onRemove: () -> Unit,
+) {
+    Box(modifier = Modifier.size(96.dp)) {
+        AsyncImage(
+            model = uri,
+            contentDescription = "Foto",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(8.dp)),
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(4.dp)
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.6f))
+                .clickable(onClick = onRemove),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "×",
+                color = Color.White,
+                modifier = Modifier.padding(bottom = 2.dp),
+            )
         }
     }
 }
