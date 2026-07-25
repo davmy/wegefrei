@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -38,6 +38,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+
+// Lists can contain the same photo more than once (picked or captured twice), so the
+// index must be part of the key — using uri.toString() alone crashes LazyRow with a
+// duplicate-key error.
+internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 
 @Composable
 internal fun PhotoCaptureRoot(
@@ -68,7 +73,7 @@ internal fun PhotoCaptureScreen(
     photoUris: List<Uri>,
     onImagesPicked: (List<Uri>) -> Unit,
     onTakePhotoRequested: () -> Unit,
-    onPhotoRemoved: (Uri) -> Unit,
+    onPhotoRemoved: (Int) -> Unit,
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
@@ -105,11 +110,14 @@ internal fun PhotoCaptureScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(items = photoUris, key = { it.toString() }) { uri ->
+                    itemsIndexed(
+                        items = photoUris,
+                        key = { index, uri -> photoThumbnailKey(index, uri) },
+                    ) { index, uri ->
                         PhotoThumbnail(
                             uri = uri,
                             onClick = { previewUri = uri },
-                            onRemove = { onPhotoRemoved(uri) },
+                            onRemove = { onPhotoRemoved(index) },
                         )
                     }
                 }

@@ -23,7 +23,7 @@ internal class PhotoCaptureViewModel : ViewModel() {
         }
     }
 
-    fun onPhotoRemoved(uri: Uri) {
-        _photoUris.value = _photoUris.value - uri
+    fun onPhotoRemoved(index: Int) {
+        _photoUris.value = _photoUris.value.toMutableList().apply { removeAt(index) }
     }
 }
