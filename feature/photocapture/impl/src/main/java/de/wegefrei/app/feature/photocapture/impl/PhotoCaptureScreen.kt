@@ -1,4 +1,4 @@
-package de.wegefrei.app.ui.photo
+package de.wegefrei.app.feature.photocapture.impl
 
 import android.Manifest
 import android.net.Uri
@@ -38,7 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 
 @Composable
-fun PhotoCaptureRoute(
+internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
 ) {
     val photoUris by viewModel.photoUris.collectAsState()
@@ -62,7 +62,7 @@ fun PhotoCaptureRoute(
 }
 
 @Composable
-fun PhotoCaptureScreen(
+internal fun PhotoCaptureScreen(
     photoUris: List<Uri>,
     onImagesPicked: (List<Uri>) -> Unit,
     onTakePhotoRequested: () -> Unit,

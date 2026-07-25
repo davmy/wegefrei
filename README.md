@@ -10,8 +10,16 @@ In aktiver Entwicklung. Aktueller Stand: Foto einer bereits vorhandenen Aufnahme
 
 - Kotlin
 - Jetpack Compose
+- Navigation Compose (typsichere Routen)
 - CameraX (Fotoaufnahme)
 - Android Photo Picker (Fotoauswahl aus der Galerie)
+
+## Modulstruktur
+
+- `app` — Einstiegspunkt, NavHost, verdrahtet die Feature-Module
+- `core:designsystem` — Theme, Farben, Typografie
+- `feature:<name>:api` — öffentliche Navigationsroute des Features
+- `feature:<name>:impl` — Screens, ViewModel, Navigationsregistrierung (internal, außer der Registrierungsfunktion)
 
 ## Entwicklung
 

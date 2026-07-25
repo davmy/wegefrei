@@ -1,4 +1,4 @@
-package de.wegefrei.app.ui.theme
+package de.wegefrei.app.core.designsystem
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

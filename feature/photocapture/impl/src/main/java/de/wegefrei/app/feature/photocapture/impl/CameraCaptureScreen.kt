@@ -1,4 +1,4 @@
-package de.wegefrei.app.ui.photo
+package de.wegefrei.app.feature.photocapture.impl
 
 import android.net.Uri
 import android.util.Log
@@ -30,7 +30,7 @@ import java.util.Locale
 private const val TAG = "CameraCaptureScreen"
 
 @Composable
-fun CameraCaptureScreen(
+internal fun CameraCaptureScreen(
     onPhotoCaptured: (Uri) -> Unit,
 ) {
     val context = LocalContext.current

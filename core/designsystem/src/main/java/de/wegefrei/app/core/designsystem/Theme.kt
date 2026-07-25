@@ -1,4 +1,4 @@
-package de.wegefrei.app.ui.theme
+package de.wegefrei.app.core.designsystem
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
