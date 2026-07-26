@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -61,6 +62,9 @@ internal fun PhotoCaptureRoot(
     val context = LocalContext.current
     val photoUris by viewModel.photoUris.collectAsState()
     val addressText by viewModel.addressText.collectAsState()
+    val licensePlateText by viewModel.licensePlateText.collectAsState()
+    val makeText by viewModel.makeText.collectAsState()
+    val colorText by viewModel.colorText.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
     var isLookingUpAddressFromPhoto by remember { mutableStateOf(false) }
     var isLookingUpAddressFromLocation by remember { mutableStateOf(false) }
@@ -115,6 +119,12 @@ internal fun PhotoCaptureRoot(
             onImagesPicked = viewModel::onImagesPicked,
             onTakePhotoRequested = { showCamera = true },
             onPhotoRemoved = viewModel::onPhotoRemoved,
+            licensePlateText = licensePlateText,
+            onLicensePlateTextChanged = viewModel::onLicensePlateTextChanged,
+            makeText = makeText,
+            onMakeTextChanged = viewModel::onMakeTextChanged,
+            colorText = colorText,
+            onColorTextChanged = viewModel::onColorTextChanged,
             addressText = addressText,
             onAddressTextChanged = viewModel::onAddressTextChanged,
             isLookingUpAddress = isLookingUpAddressFromPhoto || isLookingUpAddressFromLocation,
@@ -164,6 +174,12 @@ internal fun PhotoCaptureScreen(
     onImagesPicked: (List<Uri>) -> Unit,
     onTakePhotoRequested: () -> Unit,
     onPhotoRemoved: (Int) -> Unit,
+    licensePlateText: String,
+    onLicensePlateTextChanged: (String) -> Unit,
+    makeText: String,
+    onMakeTextChanged: (String) -> Unit,
+    colorText: String,
+    onColorTextChanged: (String) -> Unit,
     addressText: String,
     onAddressTextChanged: (String) -> Unit,
     isLookingUpAddress: Boolean,
@@ -240,6 +256,29 @@ internal fun PhotoCaptureScreen(
             }
 
             Text(
+                text = "Fahrzeug",
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            RequiredTextField(
+                value = licensePlateText,
+                onValueChange = onLicensePlateTextChanged,
+                label = "Kennzeichen",
+            )
+
+            RequiredTextField(
+                value = makeText,
+                onValueChange = onMakeTextChanged,
+                label = "Marke",
+            )
+
+            RequiredTextField(
+                value = colorText,
+                onValueChange = onColorTextChanged,
+                label = "Farbe",
+            )
+
+            Text(
                 text = "Tatort",
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -267,6 +306,14 @@ internal fun PhotoCaptureScreen(
             ) {
                 Text(text = "Aktuellen Standort verwenden")
             }
+
+            Button(
+                onClick = {},
+                enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = "Weiter")
+            }
         }
     }
 
@@ -274,6 +321,39 @@ internal fun PhotoCaptureScreen(
     if (previewedUri != null) {
         PhotoPreviewDialog(uri = previewedUri, onDismiss = { previewUri = null })
     }
+}
+
+@Composable
+private fun RequiredTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    var wasFocused by remember { mutableStateOf(false) }
+    var touched by remember { mutableStateOf(false) }
+    val isError = touched && value.isBlank()
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(text = "$label *") },
+        isError = isError,
+        supportingText = if (isError) {
+            { Text(text = "Pflichtfeld") }
+        } else {
+            null
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState ->
+                if (focusState.isFocused) {
+                    wasFocused = true
+                } else if (wasFocused) {
+                    touched = true
+                }
+            },
+    )
 }
 
 @Composable

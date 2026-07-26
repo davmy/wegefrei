@@ -122,4 +122,25 @@ class PhotoCaptureViewModelTest {
 
         assertEquals("Potsdamer Platz, Berlin", viewModel.addressText.value)
     }
+
+    @Test
+    fun `onLicensePlateTextChanged sets the license plate text`() {
+        viewModel.onLicensePlateTextChanged("KS-T 2394")
+
+        assertEquals("KS-T 2394", viewModel.licensePlateText.value)
+    }
+
+    @Test
+    fun `onMakeTextChanged sets the make text`() {
+        viewModel.onMakeTextChanged("Ford")
+
+        assertEquals("Ford", viewModel.makeText.value)
+    }
+
+    @Test
+    fun `onColorTextChanged sets the color text`() {
+        viewModel.onColorTextChanged("Silber")
+
+        assertEquals("Silber", viewModel.colorText.value)
+    }
 }
