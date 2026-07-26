@@ -47,6 +47,8 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":feature:photocapture:api"))
     implementation(project(":feature:photocapture:impl"))
+    implementation(project(":feature:witness:api"))
+    implementation(project(":feature:witness:impl"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

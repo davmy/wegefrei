@@ -13,6 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import de.wegefrei.app.core.designsystem.WegefreiTheme
 import de.wegefrei.app.feature.photocapture.api.PhotoCaptureRoute
 import de.wegefrei.app.feature.photocapture.impl.photoCaptureScreen
+import de.wegefrei.app.feature.witness.api.WitnessDetailsRoute
+import de.wegefrei.app.feature.witness.impl.witnessDetailsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +34,11 @@ class MainActivity : ComponentActivity() {
 private fun WegefreiNavHost() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = PhotoCaptureRoute) {
-        photoCaptureScreen()
+        photoCaptureScreen(
+            onOpenWitnessDetailsRequested = { navController.navigate(WitnessDetailsRoute) },
+        )
+        witnessDetailsScreen(
+            onBackRequested = { navController.navigateUp() },
+        )
     }
 }
