@@ -13,6 +13,7 @@ androidxActivity = "1.10.1"
 androidxComposeBom = "2025.06.00"
 androidxCamera = "1.4.2"
 androidxNavigation = "2.9.1"
+androidxDatastore = "1.1.7"
 
 coilCompose = "3.2.0"
 kotlinxSerializationJson = "1.8.1"
@@ -39,6 +40,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 
 androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "androidxCamera" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidxCamera" }
@@ -48,6 +50,8 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilCompose" }
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
+
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
