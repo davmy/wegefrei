@@ -67,6 +67,7 @@ internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
     onOpenWitnessDetailsRequested: () -> Unit,
+    onWeiterRequested: () -> Unit,
 ) {
     val context = LocalContext.current
     val photoUris by viewModel.photoUris.collectAsState()
@@ -146,6 +147,7 @@ internal fun PhotoCaptureRoot(
                 )
             },
             onOpenWitnessDetailsRequested = onOpenWitnessDetailsRequested,
+            onWeiterRequested = onWeiterRequested,
         )
     }
 }
@@ -196,6 +198,7 @@ internal fun PhotoCaptureScreen(
     isLookingUpAddress: Boolean,
     onUseCurrentLocationRequested: () -> Unit,
     onOpenWitnessDetailsRequested: () -> Unit,
+    onWeiterRequested: () -> Unit,
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
@@ -345,7 +348,7 @@ internal fun PhotoCaptureScreen(
             }
 
             Button(
-                onClick = {},
+                onClick = onWeiterRequested,
                 enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {

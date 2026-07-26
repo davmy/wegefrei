@@ -7,14 +7,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import de.wegefrei.app.core.designsystem.WegefreiTheme
 import de.wegefrei.app.feature.photocapture.api.PhotoCaptureRoute
 import de.wegefrei.app.feature.photocapture.impl.photoCaptureScreen
 import de.wegefrei.app.feature.witness.api.WitnessDetailsRoute
+import de.wegefrei.app.feature.witness.impl.areWitnessDetailsComplete
 import de.wegefrei.app.feature.witness.impl.witnessDetailsScreen
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,9 +37,19 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun WegefreiNavHost() {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     NavHost(navController = navController, startDestination = PhotoCaptureRoute) {
         photoCaptureScreen(
             onOpenWitnessDetailsRequested = { navController.navigate(WitnessDetailsRoute) },
+            onWeiterRequested = {
+                coroutineScope.launch {
+                    if (!areWitnessDetailsComplete(context)) {
+                        navController.navigate(WitnessDetailsRoute)
+                    }
+                }
+            },
         )
         witnessDetailsScreen(
             onBackRequested = { navController.navigateUp() },
