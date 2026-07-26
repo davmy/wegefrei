@@ -31,18 +31,18 @@ pattern but simpler — there's no auto-fill source for these, so no
 "don't clobber" logic is needed:
 
 ```kotlin
-private val _kennzeichenText = MutableStateFlow("")
-val kennzeichenText: StateFlow<String> = _kennzeichenText.asStateFlow()
+private val _licensePlateText = MutableStateFlow("")
+val licensePlateText: StateFlow<String> = _licensePlateText.asStateFlow()
 
-private val _markeText = MutableStateFlow("")
-val markeText: StateFlow<String> = _markeText.asStateFlow()
+private val _makeText = MutableStateFlow("")
+val makeText: StateFlow<String> = _makeText.asStateFlow()
 
-private val _farbeText = MutableStateFlow("")
-val farbeText: StateFlow<String> = _farbeText.asStateFlow()
+private val _colorText = MutableStateFlow("")
+val colorText: StateFlow<String> = _colorText.asStateFlow()
 
-fun onKennzeichenTextChanged(text: String) { _kennzeichenText.value = text }
-fun onMarkeTextChanged(text: String) { _markeText.value = text }
-fun onFarbeTextChanged(text: String) { _farbeText.value = text }
+fun onLicensePlateTextChanged(text: String) { _licensePlateText.value = text }
+fun onMakeTextChanged(text: String) { _makeText.value = text }
+fun onColorTextChanged(text: String) { _colorText.value = text }
 ```
 
 ### UI (`PhotoCaptureScreen`)
@@ -60,7 +60,7 @@ fun onFarbeTextChanged(text: String) { _farbeText.value = text }
   handled today.
 - A "Weiter" `Button` at the bottom of the screen (after the "Tatort"
   section), `enabled` only when all three fields
-  (`kennzeichenText`, `markeText`, `farbeText`) are non-blank. `onClick` is
+  (`licensePlateText`, `makeText`, `colorText`) are non-blank. `onClick` is
   an empty lambda — intentionally a no-op, since there is nothing to
   navigate to yet.
 
