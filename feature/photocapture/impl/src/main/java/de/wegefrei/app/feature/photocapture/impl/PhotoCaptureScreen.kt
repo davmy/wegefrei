@@ -19,25 +19,31 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.launch
 
 // Lists can contain the same photo more than once (picked or captured twice), so the
 // index must be part of the key — using uri.toString() alone crashes LazyRow with a
@@ -48,8 +54,48 @@ internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
 ) {
+    val context = LocalContext.current
     val photoUris by viewModel.photoUris.collectAsState()
+    val addressText by viewModel.addressText.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
+    var isLookingUpAddress by remember { mutableStateOf(false) }
+
+    val locationExtractor = remember { ExifPhotoLocationExtractor(context) }
+    val addressLookupService = remember { NominatimAddressLookupService() }
+    val currentLocationProvider = remember { AndroidCurrentLocationProvider(context) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(photoUris.firstOrNull()) {
+        val firstUri = photoUris.firstOrNull() ?: return@LaunchedEffect
+        isLookingUpAddress = true
+        val latLng = locationExtractor.extractLocation(firstUri)
+        if (latLng != null) {
+            val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
+            if (address != null) {
+                viewModel.onAddressAutoDetected(address)
+            }
+        }
+        isLookingUpAddress = false
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            if (granted) {
+                coroutineScope.launch {
+                    isLookingUpAddress = true
+                    val latLng = currentLocationProvider.getCurrentLocation()
+                    if (latLng != null) {
+                        val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
+                        if (address != null) {
+                            viewModel.onCurrentLocationAddressReceived(address)
+                        }
+                    }
+                    isLookingUpAddress = false
+                }
+            }
+        },
+    )
 
     if (showCamera) {
         CameraCaptureScreen(
@@ -64,6 +110,12 @@ internal fun PhotoCaptureRoot(
             onImagesPicked = viewModel::onImagesPicked,
             onTakePhotoRequested = { showCamera = true },
             onPhotoRemoved = viewModel::onPhotoRemoved,
+            addressText = addressText,
+            onAddressTextChanged = viewModel::onAddressTextChanged,
+            isLookingUpAddress = isLookingUpAddress,
+            onUseCurrentLocationRequested = {
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            },
         )
     }
 }
@@ -74,6 +126,10 @@ internal fun PhotoCaptureScreen(
     onImagesPicked: (List<Uri>) -> Unit,
     onTakePhotoRequested: () -> Unit,
     onPhotoRemoved: (Int) -> Unit,
+    addressText: String,
+    onAddressTextChanged: (String) -> Unit,
+    isLookingUpAddress: Boolean,
+    onUseCurrentLocationRequested: () -> Unit,
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
@@ -141,6 +197,29 @@ internal fun PhotoCaptureScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Foto aufnehmen")
+            }
+
+            Text(
+                text = "Adresse",
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            OutlinedTextField(
+                value = addressText,
+                onValueChange = onAddressTextChanged,
+                label = { Text(text = "Adresse") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            if (isLookingUpAddress) {
+                CircularProgressIndicator()
+            }
+
+            Button(
+                onClick = onUseCurrentLocationRequested,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = "Aktuellen Standort verwenden")
             }
         }
     }
