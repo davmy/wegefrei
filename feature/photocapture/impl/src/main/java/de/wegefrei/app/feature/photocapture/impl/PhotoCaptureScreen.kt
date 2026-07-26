@@ -21,12 +21,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,6 +66,7 @@ internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 @Composable
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
+    onOpenWitnessDetailsRequested: () -> Unit,
 ) {
     val context = LocalContext.current
     val photoUris by viewModel.photoUris.collectAsState()
@@ -136,6 +145,7 @@ internal fun PhotoCaptureRoot(
                     ),
                 )
             },
+            onOpenWitnessDetailsRequested = onOpenWitnessDetailsRequested,
         )
     }
 }
@@ -168,6 +178,7 @@ private suspend fun lookupAndReportAddress(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PhotoCaptureScreen(
     photoUris: List<Uri>,
@@ -184,6 +195,7 @@ internal fun PhotoCaptureScreen(
     onAddressTextChanged: (String) -> Unit,
     isLookingUpAddress: Boolean,
     onUseCurrentLocationRequested: () -> Unit,
+    onOpenWitnessDetailsRequested: () -> Unit,
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
@@ -199,7 +211,32 @@ internal fun PhotoCaptureScreen(
         onResult = { granted -> if (granted) onTakePhotoRequested() },
     )
 
-    Scaffold { innerPadding ->
+    var showMenu by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Falschparker melden") },
+                actions = {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menü")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Meine Angaben") },
+                            onClick = {
+                                showMenu = false
+                                onOpenWitnessDetailsRequested()
+                            },
+                        )
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
