@@ -19,9 +19,11 @@ app's first second screen and first navigation menu.
   separate concern for whenever that flow is built.
 - No account system, no cloud sync, no multiple saved profiles — one local
   set of values for "the person using this device."
-- No required-field enforcement (no `*`, no "Pflichtfeld", no gating) —
-  there's nothing here to gate; the user edits freely and it saves as they
-  go.
+- No gating action tied to the required fields — there's no "Weiter"/save
+  button on this screen (edits auto-save), so "mandatory" here means
+  visual required-field validation only (matching the existing `*` /
+  "Pflichtfeld" pattern from the vehicle fields), not blocking navigation
+  or disabling anything.
 
 ## Architecture decision: new feature module
 
@@ -96,25 +98,45 @@ Every edit writes straight through to the repository (auto-save, no
 explicit save action) — DataStore's `edit {}` is itself debounced/batched
 at the OS level, so no additional debouncing is needed here.
 
-**`WitnessDetailsScreen`** — three plain `OutlinedTextField`s (Name,
-Adresse, E-Mail), each bound directly to its `StateFlow`/setter pair, no
-required-field styling. The email field additionally shows a touched-based
-format error (see below) — reusing the *shape* of the existing
-`RequiredTextField`'s touched-tracking (`wasFocused`/`touched` flags, fixed
-in the vehicle-fields feature to not fire on initial composition) but with
-a different predicate: instead of "blank", it's "non-blank and not a
-plausible email". A small `EmailTextField` composable is added for this
-(not a generalization of `RequiredTextField` into every field — this
-module has its own copy of the touched-tracking pattern, since sharing it
-across feature modules would need a `core` module extraction that isn't
-justified for one field).
+**`WitnessDetailsScreen`** — three required fields (Name, Adresse,
+E-Mail), all using the same touched-then-invalid validation shape as the
+existing `RequiredTextField` from the vehicle-fields feature
+(`wasFocused`/`touched` flags, fixed there to not fire on initial
+composition) — reimplemented locally in this module as a single
+`WitnessTextField` composable, since this module has no shared UI kit with
+`feature/photocapture` and extracting one into `core` isn't justified for
+three fields:
+
+```kotlin
+@Composable
+private fun WitnessTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    validate: (String) -> String? = { if (it.isBlank()) "Pflichtfeld" else null },
+)
+```
+
+`validate` returns an error message to show (once touched) or `null` if
+valid. Name and Adresse use the default (required, blank check only). The
+email field passes a custom validator combining required-ness and format:
+
+```kotlin
+validate = { value ->
+    when {
+        value.isBlank() -> "Pflichtfeld"
+        !isValidEmail(value) -> "Ungültige E-Mail-Adresse"
+        else -> null
+    }
+}
+```
 
 Email format check: a simple regex,
 `^[^@\s]+@[^@\s]+\.[^@\s]+$` — not RFC-perfect, just enough to catch
 "forgot the @" or "forgot the domain," matching the "basic format check"
-decision. Shows an inline error ("Ungültige E-Mail-Adresse") once the
-field has been touched and its current value is non-blank and fails the
-regex. A blank email shows no error (this field isn't required).
+decision, exposed as `internal fun isValidEmail(value: String): Boolean`
+so it's independently testable.
 
 **`WitnessDetailsNavigation.kt`** — mirrors `PhotoCaptureNavigation.kt`:
 
@@ -174,7 +196,8 @@ DataStore's built-in behavior for a fresh install).
 - A pure unit test for the email-format regex/validation function,
   extracted as a standalone `internal fun isValidEmail(value: String): Boolean`
   so it's testable without Compose or Robolectric.
-- `DataStoreWitnessDetailsRepository` itself, `WitnessDetailsScreen`, and
-  the menu/navigation wiring are left untested — real DataStore I/O and
-  Compose UI wiring, consistent with this codebase's existing pattern of
-  leaving thin platform wrappers and Compose UI untested.
+- `DataStoreWitnessDetailsRepository`, `WitnessDetailsScreen`,
+  `WitnessTextField`'s touched/error display, and the menu/navigation
+  wiring are left untested — real DataStore I/O and Compose UI wiring,
+  consistent with this codebase's existing pattern of leaving thin
+  platform wrappers and Compose UI untested.
