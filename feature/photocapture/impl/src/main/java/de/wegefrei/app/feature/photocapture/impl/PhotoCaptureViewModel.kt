@@ -16,6 +16,15 @@ internal class PhotoCaptureViewModel : ViewModel() {
     private val _addressText = MutableStateFlow("")
     val addressText: StateFlow<String> = _addressText.asStateFlow()
 
+    private val _licensePlateText = MutableStateFlow("")
+    val licensePlateText: StateFlow<String> = _licensePlateText.asStateFlow()
+
+    private val _makeText = MutableStateFlow("")
+    val makeText: StateFlow<String> = _makeText.asStateFlow()
+
+    private val _colorText = MutableStateFlow("")
+    val colorText: StateFlow<String> = _colorText.asStateFlow()
+
     private var hasUserEditedAddress = false
 
     fun onImagesPicked(uris: List<Uri>) {
@@ -47,5 +56,17 @@ internal class PhotoCaptureViewModel : ViewModel() {
     fun onCurrentLocationAddressReceived(text: String) {
         hasUserEditedAddress = true
         _addressText.value = text
+    }
+
+    fun onLicensePlateTextChanged(text: String) {
+        _licensePlateText.value = text
+    }
+
+    fun onMakeTextChanged(text: String) {
+        _makeText.value = text
+    }
+
+    fun onColorTextChanged(text: String) {
+        _colorText.value = text
     }
 }
