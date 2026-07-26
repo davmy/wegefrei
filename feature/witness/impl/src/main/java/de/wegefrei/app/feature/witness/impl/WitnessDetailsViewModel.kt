@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 internal class WitnessDetailsViewModel(
@@ -21,9 +22,9 @@ internal class WitnessDetailsViewModel(
     val email: StateFlow<String> = _email.asStateFlow()
 
     init {
-        viewModelScope.launch { repository.name.collect { _name.value = it } }
-        viewModelScope.launch { repository.address.collect { _address.value = it } }
-        viewModelScope.launch { repository.email.collect { _email.value = it } }
+        viewModelScope.launch { _name.value = repository.name.first() }
+        viewModelScope.launch { _address.value = repository.address.first() }
+        viewModelScope.launch { _email.value = repository.email.first() }
     }
 
     fun onNameChanged(value: String) {

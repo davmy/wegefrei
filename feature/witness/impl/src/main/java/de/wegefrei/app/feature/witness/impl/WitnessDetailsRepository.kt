@@ -13,7 +13,7 @@ private val NAME_KEY = stringPreferencesKey("name")
 private val ADDRESS_KEY = stringPreferencesKey("address")
 private val EMAIL_KEY = stringPreferencesKey("email")
 
-interface WitnessDetailsRepository {
+internal interface WitnessDetailsRepository {
     val name: Flow<String>
     val address: Flow<String>
     val email: Flow<String>
@@ -23,22 +23,24 @@ interface WitnessDetailsRepository {
 }
 
 internal class DataStoreWitnessDetailsRepository(
-    private val context: Context,
+    context: Context,
 ) : WitnessDetailsRepository {
 
-    override val name: Flow<String> = context.witnessDetailsDataStore.data.map { it[NAME_KEY] ?: "" }
-    override val address: Flow<String> = context.witnessDetailsDataStore.data.map { it[ADDRESS_KEY] ?: "" }
-    override val email: Flow<String> = context.witnessDetailsDataStore.data.map { it[EMAIL_KEY] ?: "" }
+    private val appContext = context.applicationContext
+
+    override val name: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[NAME_KEY] ?: "" }
+    override val address: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[ADDRESS_KEY] ?: "" }
+    override val email: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[EMAIL_KEY] ?: "" }
 
     override suspend fun saveName(value: String) {
-        context.witnessDetailsDataStore.edit { it[NAME_KEY] = value }
+        appContext.witnessDetailsDataStore.edit { it[NAME_KEY] = value }
     }
 
     override suspend fun saveAddress(value: String) {
-        context.witnessDetailsDataStore.edit { it[ADDRESS_KEY] = value }
+        appContext.witnessDetailsDataStore.edit { it[ADDRESS_KEY] = value }
     }
 
     override suspend fun saveEmail(value: String) {
-        context.witnessDetailsDataStore.edit { it[EMAIL_KEY] = value }
+        appContext.witnessDetailsDataStore.edit { it[EMAIL_KEY] = value }
     }
 }
