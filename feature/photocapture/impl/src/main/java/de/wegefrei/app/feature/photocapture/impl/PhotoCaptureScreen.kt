@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +46,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 // Lists can contain the same photo more than once (picked or captured twice), so the
@@ -67,32 +71,32 @@ internal fun PhotoCaptureRoot(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(photoUris.firstOrNull()) {
-        val firstUri = photoUris.firstOrNull() ?: return@LaunchedEffect
-        isLookingUpAddressFromPhoto = true
-        val latLng = locationExtractor.extractLocation(firstUri)
-        if (latLng != null) {
-            val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
-            if (address != null) {
-                viewModel.onAddressAutoDetected(address)
-            }
+        val firstUri = photoUris.firstOrNull()
+        if (firstUri == null) {
+            isLookingUpAddressFromPhoto = false
+            return@LaunchedEffect
         }
-        isLookingUpAddressFromPhoto = false
+        lookupAndReportAddress(
+            setLoading = { isLookingUpAddressFromPhoto = it },
+            onAddressFound = viewModel::onAddressAutoDetected,
+            fetchLatLng = { locationExtractor.extractLocation(firstUri) },
+            addressLookupService = addressLookupService,
+        )
     }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted ->
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { results ->
+            val granted = results[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                results[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             if (granted) {
                 coroutineScope.launch {
-                    isLookingUpAddressFromLocation = true
-                    val latLng = currentLocationProvider.getCurrentLocation()
-                    if (latLng != null) {
-                        val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
-                        if (address != null) {
-                            viewModel.onCurrentLocationAddressReceived(address)
-                        }
-                    }
-                    isLookingUpAddressFromLocation = false
+                    lookupAndReportAddress(
+                        setLoading = { isLookingUpAddressFromLocation = it },
+                        onAddressFound = viewModel::onCurrentLocationAddressReceived,
+                        fetchLatLng = { currentLocationProvider.getCurrentLocation() },
+                        addressLookupService = addressLookupService,
+                    )
                 }
             }
         },
@@ -115,9 +119,42 @@ internal fun PhotoCaptureRoot(
             onAddressTextChanged = viewModel::onAddressTextChanged,
             isLookingUpAddress = isLookingUpAddressFromPhoto || isLookingUpAddressFromLocation,
             onUseCurrentLocationRequested = {
-                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                locationPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    ),
+                )
             },
         )
+    }
+}
+
+// Shared by the EXIF-based and current-location-based lookup chains: fetches a LatLng,
+// reverse-geocodes it, and reports the address. Every failure path (other than
+// cancellation, which must propagate for structured concurrency) resolves to a silent
+// no-op per spec, and the loading flag is always cleared.
+private suspend fun lookupAndReportAddress(
+    setLoading: (Boolean) -> Unit,
+    onAddressFound: (String) -> Unit,
+    fetchLatLng: suspend () -> LatLng?,
+    addressLookupService: AddressLookupService,
+) {
+    setLoading(true)
+    try {
+        val latLng = fetchLatLng()
+        if (latLng != null) {
+            val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
+            if (address != null) {
+                onAddressFound(address)
+            }
+        }
+    } catch (c: CancellationException) {
+        throw c
+    } catch (e: Exception) {
+        // Silent failure per spec — every lookup failure path resolves to no-op.
+    } finally {
+        setLoading(false)
     }
 }
 
@@ -151,7 +188,9 @@ internal fun PhotoCaptureScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {

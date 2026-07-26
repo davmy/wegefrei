@@ -21,7 +21,11 @@ internal class AndroidCurrentLocationProvider(
         val hasPermission = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION,
-        ) == PackageManager.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
         if (!hasPermission) return null
 
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -35,13 +39,19 @@ internal class AndroidCurrentLocationProvider(
             val cancellationSignal = CancellationSignal()
             continuation.invokeOnCancellation { cancellationSignal.cancel() }
 
-            locationManager.getCurrentLocation(
-                provider,
-                cancellationSignal,
-                context.mainExecutor,
-            ) { location ->
-                val result = location?.let { LatLng(latitude = it.latitude, longitude = it.longitude) }
-                if (continuation.isActive) continuation.resume(result)
+            try {
+                locationManager.getCurrentLocation(
+                    provider,
+                    cancellationSignal,
+                    context.mainExecutor,
+                ) { location ->
+                    val result = location?.let { LatLng(latitude = it.latitude, longitude = it.longitude) }
+                    if (continuation.isActive) continuation.resume(result)
+                }
+            } catch (e: SecurityException) {
+                // Defensive fallback: permission may have been revoked between the
+                // upfront check and this call (TOCTOU).
+                if (continuation.isActive) continuation.resume(null)
             }
         }
     }
