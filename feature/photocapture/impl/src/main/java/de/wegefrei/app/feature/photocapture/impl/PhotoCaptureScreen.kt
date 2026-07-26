@@ -21,12 +21,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,6 +55,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -65,6 +78,7 @@ internal fun PhotoCaptureRoot(
     val licensePlateText by viewModel.licensePlateText.collectAsState()
     val makeText by viewModel.makeText.collectAsState()
     val colorText by viewModel.colorText.collectAsState()
+    val incidentDateTime by viewModel.incidentDateTime.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
     var isLookingUpAddressFromPhoto by remember { mutableStateOf(false) }
     var isLookingUpAddressFromLocation by remember { mutableStateOf(false) }
@@ -72,6 +86,7 @@ internal fun PhotoCaptureRoot(
     val locationExtractor = remember { ExifPhotoLocationExtractor(context) }
     val addressLookupService = remember { NominatimAddressLookupService() }
     val currentLocationProvider = remember { AndroidCurrentLocationProvider(context) }
+    val timestampExtractor = remember { ExifPhotoTimestampExtractor(context) }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(photoUris.firstOrNull()) {
@@ -86,6 +101,11 @@ internal fun PhotoCaptureRoot(
             fetchLatLng = { locationExtractor.extractLocation(firstUri) },
             addressLookupService = addressLookupService,
         )
+    }
+
+    LaunchedEffect(photoUris) {
+        val timestamps = photoUris.mapNotNull { uri -> timestampExtractor.extractTimestamp(uri) }
+        viewModel.onPhotoTimestampsExtracted(timestamps)
     }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -125,6 +145,8 @@ internal fun PhotoCaptureRoot(
             onMakeTextChanged = viewModel::onMakeTextChanged,
             colorText = colorText,
             onColorTextChanged = viewModel::onColorTextChanged,
+            incidentDateTime = incidentDateTime,
+            onIncidentDateTimeChanged = viewModel::onIncidentDateTimeChanged,
             addressText = addressText,
             onAddressTextChanged = viewModel::onAddressTextChanged,
             isLookingUpAddress = isLookingUpAddressFromPhoto || isLookingUpAddressFromLocation,
@@ -180,6 +202,8 @@ internal fun PhotoCaptureScreen(
     onMakeTextChanged: (String) -> Unit,
     colorText: String,
     onColorTextChanged: (String) -> Unit,
+    incidentDateTime: LocalDateTime,
+    onIncidentDateTimeChanged: (LocalDateTime) -> Unit,
     addressText: String,
     onAddressTextChanged: (String) -> Unit,
     isLookingUpAddress: Boolean,
@@ -279,6 +303,16 @@ internal fun PhotoCaptureScreen(
             )
 
             Text(
+                text = "Tatzeitpunkt",
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            IncidentDateTimePicker(
+                incidentDateTime = incidentDateTime,
+                onIncidentDateTimeChanged = onIncidentDateTimeChanged,
+            )
+
+            Text(
                 text = "Tatort",
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -320,6 +354,95 @@ internal fun PhotoCaptureScreen(
     val previewedUri = previewUri
     if (previewedUri != null) {
         PhotoPreviewDialog(uri = previewedUri, onDismiss = { previewUri = null })
+    }
+}
+
+private val INCIDENT_DATE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun IncidentDateTimePicker(
+    incidentDateTime: LocalDateTime,
+    onIncidentDateTimeChanged: (LocalDateTime) -> Unit,
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    var pendingDate by remember { mutableStateOf<LocalDate?>(null) }
+
+    Button(
+        onClick = { showDatePicker = true },
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(text = incidentDateTime.format(INCIDENT_DATE_TIME_FORMATTER))
+    }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = incidentDateTime.toLocalDate()
+                .atStartOfDay(ZoneOffset.UTC)
+                .toInstant()
+                .toEpochMilli(),
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val selectedMillis = datePickerState.selectedDateMillis
+                        if (selectedMillis != null) {
+                            pendingDate = Instant.ofEpochMilli(selectedMillis)
+                                .atZone(ZoneOffset.UTC)
+                                .toLocalDate()
+                            showDatePicker = false
+                            showTimePicker = true
+                        } else {
+                            showDatePicker = false
+                        }
+                    },
+                ) {
+                    Text(text = "OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(text = "Abbrechen")
+                }
+            },
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    val datePendingTime = pendingDate
+    if (showTimePicker && datePendingTime != null) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = incidentDateTime.hour,
+            initialMinute = incidentDateTime.minute,
+            is24Hour = true,
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onIncidentDateTimeChanged(
+                            datePendingTime.atTime(timePickerState.hour, timePickerState.minute),
+                        )
+                        showTimePicker = false
+                    },
+                ) {
+                    Text(text = "OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(text = "Abbrechen")
+                }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            },
+        )
     }
 }
 
