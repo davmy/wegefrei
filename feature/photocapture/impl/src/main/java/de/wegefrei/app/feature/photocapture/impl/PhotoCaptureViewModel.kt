@@ -2,6 +2,7 @@ package de.wegefrei.app.feature.photocapture.impl
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +25,11 @@ internal class PhotoCaptureViewModel : ViewModel() {
 
     private val _colorText = MutableStateFlow("")
     val colorText: StateFlow<String> = _colorText.asStateFlow()
+
+    private val _incidentDateTime = MutableStateFlow(LocalDateTime.now().withSecond(0).withNano(0))
+    val incidentDateTime: StateFlow<LocalDateTime> = _incidentDateTime.asStateFlow()
+
+    private var hasUserEditedIncidentDateTime = false
 
     private var hasUserEditedAddress = false
 
@@ -68,5 +74,15 @@ internal class PhotoCaptureViewModel : ViewModel() {
 
     fun onColorTextChanged(text: String) {
         _colorText.value = text
+    }
+
+    fun onIncidentDateTimeChanged(dateTime: LocalDateTime) {
+        hasUserEditedIncidentDateTime = true
+        _incidentDateTime.value = dateTime.withSecond(0).withNano(0)
+    }
+
+    fun onPhotoTimestampsExtracted(timestamps: List<LocalDateTime>) {
+        if (hasUserEditedIncidentDateTime) return
+        _incidentDateTime.value = (timestamps.minOrNull() ?: LocalDateTime.now()).withSecond(0).withNano(0)
     }
 }
