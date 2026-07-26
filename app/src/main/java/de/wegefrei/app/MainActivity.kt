@@ -17,7 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import de.wegefrei.app.core.designsystem.WegefreiTheme
 import de.wegefrei.app.feature.photocapture.api.PhotoCaptureRoute
-import de.wegefrei.app.feature.photocapture.impl.CompressingEmailAttachmentPreparer
+import de.wegefrei.app.feature.photocapture.impl.EmailAttachmentPreparer
+import de.wegefrei.app.feature.photocapture.impl.emailAttachmentPreparer
 import de.wegefrei.app.feature.photocapture.impl.photoCaptureScreen
 import de.wegefrei.app.feature.witness.api.WitnessDetailsRoute
 import de.wegefrei.app.feature.witness.impl.areWitnessDetailsComplete
@@ -44,7 +45,7 @@ private fun WegefreiNavHost() {
     val navController = rememberNavController()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val attachmentPreparer = remember { CompressingEmailAttachmentPreparer(context) }
+    val attachmentPreparer: EmailAttachmentPreparer = remember { emailAttachmentPreparer(context.applicationContext) }
 
     NavHost(navController = navController, startDestination = PhotoCaptureRoute) {
         photoCaptureScreen(

@@ -424,7 +424,7 @@ internal fun PhotoCaptureScreen(
                     )
                 },
                 enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank() &&
-                    violationText.isNotBlank() && obstructionText.isNotBlank(),
+                    violationText.isNotBlank() && obstructionText.isNotBlank() && addressText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Weiter")

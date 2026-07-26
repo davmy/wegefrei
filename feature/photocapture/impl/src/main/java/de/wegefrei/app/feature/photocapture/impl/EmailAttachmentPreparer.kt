@@ -3,8 +3,10 @@ package de.wegefrei.app.feature.photocapture.impl
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -18,35 +20,42 @@ interface EmailAttachmentPreparer {
     suspend fun prepareAttachments(photoUris: List<Uri>): List<Uri>
 }
 
-class CompressingEmailAttachmentPreparer(
+internal class CompressingEmailAttachmentPreparer(
     private val context: Context,
 ) : EmailAttachmentPreparer {
 
     override suspend fun prepareAttachments(photoUris: List<Uri>): List<Uri> = withContext(Dispatchers.IO) {
-        photoUris.mapIndexedNotNull { index, uri -> compressAndStore(uri, index) }
+        val outputDir = File(context.cacheDir, "report_photos/${System.currentTimeMillis()}").apply { mkdirs() }
+        photoUris.mapIndexedNotNull { index, uri -> compressAndStore(uri, index, outputDir) }
     }
 
-    private fun compressAndStore(uri: Uri, index: Int): Uri? {
+    private fun compressAndStore(uri: Uri, index: Int, outputDir: File): Uri? {
         return try {
             val bitmap = decodeSampledBitmap(uri) ?: return null
-            val outputDir = File(context.cacheDir, "report_photos").apply { mkdirs() }
             val outputFile = File(outputDir, "report_photo_$index.jpg")
-            FileOutputStream(outputFile).use { stream ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, stream)
+            try {
+                FileOutputStream(outputFile).use { stream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, stream)
+                }
+            } finally {
+                bitmap.recycle()
             }
-            bitmap.recycle()
             FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", outputFile)
         } catch (e: IOException) {
+            null
+        } catch (e: SecurityException) {
+            null
+        } catch (e: IllegalArgumentException) {
             null
         }
     }
 
     private fun decodeSampledBitmap(uri: Uri): Bitmap? {
         val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        val boundsRead = context.contentResolver.openInputStream(uri)?.use { stream ->
+        context.contentResolver.openInputStream(uri)?.use { stream ->
             BitmapFactory.decodeStream(stream, null, boundsOptions)
         }
-        if (boundsRead == null && boundsOptions.outWidth <= 0) return null
+        if (boundsOptions.outWidth <= 0) return null
 
         var sampleSize = 1
         while (boundsOptions.outWidth / sampleSize > MAX_DIMENSION_PX ||
@@ -56,8 +65,47 @@ class CompressingEmailAttachmentPreparer(
         }
 
         val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-        return context.contentResolver.openInputStream(uri)?.use { stream ->
+        val decoded = context.contentResolver.openInputStream(uri)?.use { stream ->
             BitmapFactory.decodeStream(stream, null, decodeOptions)
+        } ?: return null
+
+        return applyExifRotation(uri, decoded)
+    }
+
+    private fun applyExifRotation(uri: Uri, source: Bitmap): Bitmap {
+        val degrees = readExifOrientationDegrees(uri)
+        if (degrees == 0f) return source
+
+        val matrix = Matrix().apply { postRotate(degrees) }
+        val rotated = Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+        if (rotated !== source) {
+            source.recycle()
+        }
+        return rotated
+    }
+
+    private fun readExifOrientationDegrees(uri: Uri): Float {
+        val orientation = try {
+            context.contentResolver.openInputStream(uri)?.use { stream ->
+                ExifInterface(stream).getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL,
+                )
+            } ?: ExifInterface.ORIENTATION_NORMAL
+        } catch (e: IOException) {
+            ExifInterface.ORIENTATION_NORMAL
+        } catch (e: SecurityException) {
+            ExifInterface.ORIENTATION_NORMAL
+        }
+
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+            else -> 0f
         }
     }
 }
+
+fun emailAttachmentPreparer(context: Context): EmailAttachmentPreparer =
+    CompressingEmailAttachmentPreparer(context)
