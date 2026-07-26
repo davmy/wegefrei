@@ -14,11 +14,12 @@ internal class PhotoCaptureViewModel : ViewModel() {
     val photoUris: StateFlow<List<Uri>> = _photoUris.asStateFlow()
 
     fun onImagesPicked(uris: List<Uri>) {
-        _photoUris.value = (_photoUris.value + uris).take(MAX_PHOTOS)
+        val newUris = uris.filter { it !in _photoUris.value }.distinct()
+        _photoUris.value = (_photoUris.value + newUris).take(MAX_PHOTOS)
     }
 
     fun onPhotoCaptured(uri: Uri) {
-        if (_photoUris.value.size < MAX_PHOTOS) {
+        if (_photoUris.value.size < MAX_PHOTOS && uri !in _photoUris.value) {
             _photoUris.value = _photoUris.value + uri
         }
     }

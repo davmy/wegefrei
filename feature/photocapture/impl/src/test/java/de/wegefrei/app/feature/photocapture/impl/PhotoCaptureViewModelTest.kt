@@ -21,12 +21,33 @@ class PhotoCaptureViewModelTest {
     }
 
     @Test
-    fun `onImagesPicked allows the same photo to be picked twice`() {
+    fun `onImagesPicked ignores duplicates within the same batch`() {
         val uri = Uri.parse("content://photos/1")
 
         viewModel.onImagesPicked(listOf(uri, uri))
 
-        assertEquals(listOf(uri, uri), viewModel.photoUris.value)
+        assertEquals(listOf(uri), viewModel.photoUris.value)
+    }
+
+    @Test
+    fun `onImagesPicked ignores a photo already in the list`() {
+        val uri = Uri.parse("content://photos/1")
+        val other = Uri.parse("content://photos/2")
+        viewModel.onImagesPicked(listOf(uri))
+
+        viewModel.onImagesPicked(listOf(uri, other))
+
+        assertEquals(listOf(uri, other), viewModel.photoUris.value)
+    }
+
+    @Test
+    fun `onPhotoCaptured ignores a photo already in the list`() {
+        val uri = Uri.parse("content://photos/1")
+        viewModel.onImagesPicked(listOf(uri))
+
+        viewModel.onPhotoCaptured(uri)
+
+        assertEquals(listOf(uri), viewModel.photoUris.value)
     }
 
     @Test
@@ -47,18 +68,6 @@ class PhotoCaptureViewModelTest {
         viewModel.onPhotoCaptured(Uri.parse("content://photos/extra"))
 
         assertEquals(uris, viewModel.photoUris.value)
-    }
-
-    @Test
-    fun `onPhotoRemoved removes the tapped occurrence, not just any matching uri`() {
-        val uri = Uri.parse("content://photos/1")
-        val other = Uri.parse("content://photos/2")
-        viewModel.onImagesPicked(listOf(uri, other, uri))
-
-        // Remove the duplicate at index 2, the first occurrence (index 0) must survive.
-        viewModel.onPhotoRemoved(2)
-
-        assertEquals(listOf(uri, other), viewModel.photoUris.value)
     }
 
     @Test
