@@ -1,7 +1,10 @@
 package de.wegefrei.app.feature.photocapture.impl
 
 import android.net.Uri
+import java.time.Duration
+import java.time.LocalDateTime
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -142,5 +145,45 @@ class PhotoCaptureViewModelTest {
         viewModel.onColorTextChanged("Silber")
 
         assertEquals("Silber", viewModel.colorText.value)
+    }
+
+    @Test
+    fun `onIncidentDateTimeChanged truncates seconds and nanoseconds`() {
+        val dateTime = LocalDateTime.of(2026, 7, 26, 14, 32, 45, 123456789)
+
+        viewModel.onIncidentDateTimeChanged(dateTime)
+
+        assertEquals(LocalDateTime.of(2026, 7, 26, 14, 32, 0, 0), viewModel.incidentDateTime.value)
+    }
+
+    @Test
+    fun `onPhotoTimestampsExtracted sets the minimum timestamp when nothing was manually edited`() {
+        val earliest = LocalDateTime.of(2026, 7, 26, 10, 15)
+        val later = LocalDateTime.of(2026, 7, 26, 12, 0)
+
+        viewModel.onPhotoTimestampsExtracted(listOf(later, earliest))
+
+        assertEquals(earliest, viewModel.incidentDateTime.value)
+    }
+
+    @Test
+    fun `onPhotoTimestampsExtracted does not overwrite a manual edit`() {
+        val manual = LocalDateTime.of(2026, 7, 20, 8, 0)
+        viewModel.onIncidentDateTimeChanged(manual)
+
+        viewModel.onPhotoTimestampsExtracted(listOf(LocalDateTime.of(2026, 7, 26, 10, 15)))
+
+        assertEquals(manual, viewModel.incidentDateTime.value)
+    }
+
+    @Test
+    fun `onPhotoTimestampsExtracted falls back to now when the list is empty and nothing was manually edited`() {
+        viewModel.onPhotoTimestampsExtracted(emptyList())
+
+        // Tolerance avoids flakiness from the truncation-to-minute and any tiny
+        // scheduling delay between this call and reading LocalDateTime.now() here.
+        val minutesDifference = Duration.between(viewModel.incidentDateTime.value, LocalDateTime.now())
+            .toMinutes()
+        assertTrue(minutesDifference in -1..1)
     }
 }
