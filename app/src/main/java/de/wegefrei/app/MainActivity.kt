@@ -42,11 +42,13 @@ private fun WegefreiNavHost() {
 
     NavHost(navController = navController, startDestination = PhotoCaptureRoute) {
         photoCaptureScreen(
-            onOpenWitnessDetailsRequested = { navController.navigate(WitnessDetailsRoute) },
+            onOpenWitnessDetailsRequested = {
+                navController.navigate(WitnessDetailsRoute) { launchSingleTop = true }
+            },
             onWeiterRequested = {
                 coroutineScope.launch {
                     if (!areWitnessDetailsComplete(context)) {
-                        navController.navigate(WitnessDetailsRoute)
+                        navController.navigate(WitnessDetailsRoute) { launchSingleTop = true }
                     }
                 }
             },
