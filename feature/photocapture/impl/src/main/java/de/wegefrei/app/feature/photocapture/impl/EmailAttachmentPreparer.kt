@@ -18,7 +18,7 @@ interface EmailAttachmentPreparer {
     suspend fun prepareAttachments(photoUris: List<Uri>): List<Uri>
 }
 
-internal class CompressingEmailAttachmentPreparer(
+class CompressingEmailAttachmentPreparer(
     private val context: Context,
 ) : EmailAttachmentPreparer {
 
