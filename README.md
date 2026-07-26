@@ -10,8 +10,16 @@ In aktiver Entwicklung. Aktueller Stand: Foto einer bereits vorhandenen Aufnahme
 
 - Kotlin
 - Jetpack Compose
+- Navigation Compose (typsichere Routen)
 - CameraX (Fotoaufnahme)
 - Android Photo Picker (Fotoauswahl aus der Galerie)
+
+## Modulstruktur
+
+- `app` — Einstiegspunkt, NavHost, verdrahtet die Feature-Module
+- `core:designsystem` — Theme, Farben, Typografie
+- `feature:<name>:api` — öffentliche Navigationsroute des Features
+- `feature:<name>:impl` — Screens, ViewModel, Navigationsregistrierung (internal, außer der Registrierungsfunktion)
 
 ## Entwicklung
 
@@ -19,8 +27,4 @@ Jedes Feature wird auf einem eigenen Branch entwickelt (`feature/*`). Pull Reque
 
 ### Build
 
-Benötigt ein JDK 17-21 mit `javac` (die vorinstallierte JRE reicht nicht). Falls `JAVA_HOME` nicht auf ein passendes JDK zeigt:
-
-```
-./gradlew -Dorg.gradle.java.home=/pfad/zu/jdk-21 :app:assembleDebug
-```
+`./gradlew :app:assembleDebug` genügt — der Gradle-Wrapper lädt sich über `gradle/gradle-daemon-jvm.properties` bei Bedarf selbst ein passendes JDK 21.

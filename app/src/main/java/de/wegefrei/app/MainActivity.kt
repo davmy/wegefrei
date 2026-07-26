@@ -6,9 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import de.wegefrei.app.ui.photo.PhotoCaptureRoute
-import de.wegefrei.app.ui.theme.WegefreiTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import de.wegefrei.app.core.designsystem.WegefreiTheme
+import de.wegefrei.app.feature.photocapture.api.PhotoCaptureRoute
+import de.wegefrei.app.feature.photocapture.impl.photoCaptureScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,9 +21,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             WegefreiTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PhotoCaptureRoute()
+                    WegefreiNavHost()
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun WegefreiNavHost() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = PhotoCaptureRoute) {
+        photoCaptureScreen()
     }
 }

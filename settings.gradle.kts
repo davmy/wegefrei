@@ -17,3 +17,6 @@ dependencyResolutionManagement {
 rootProject.name = "wegefrei"
 
 include(":app")
+include(":core:designsystem")
+include(":feature:photocapture:api")
+include(":feature:photocapture:impl")
