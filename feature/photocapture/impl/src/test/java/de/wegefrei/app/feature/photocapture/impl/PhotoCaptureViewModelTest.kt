@@ -81,4 +81,45 @@ class PhotoCaptureViewModelTest {
 
         assertEquals(listOf(first, third), viewModel.photoUris.value)
     }
+
+    @Test
+    fun `onAddressTextChanged sets the address text`() {
+        viewModel.onAddressTextChanged("Musterstraße 1, Berlin")
+
+        assertEquals("Musterstraße 1, Berlin", viewModel.addressText.value)
+    }
+
+    @Test
+    fun `onAddressAutoDetected sets the address text when nothing was entered yet`() {
+        viewModel.onAddressAutoDetected("Alexanderplatz, Berlin")
+
+        assertEquals("Alexanderplatz, Berlin", viewModel.addressText.value)
+    }
+
+    @Test
+    fun `onAddressAutoDetected does not overwrite a manual edit`() {
+        viewModel.onAddressTextChanged("Meine eigene Adresse")
+
+        viewModel.onAddressAutoDetected("Alexanderplatz, Berlin")
+
+        assertEquals("Meine eigene Adresse", viewModel.addressText.value)
+    }
+
+    @Test
+    fun `onCurrentLocationAddressReceived always overwrites the address text`() {
+        viewModel.onAddressTextChanged("Meine eigene Adresse")
+
+        viewModel.onCurrentLocationAddressReceived("Potsdamer Platz, Berlin")
+
+        assertEquals("Potsdamer Platz, Berlin", viewModel.addressText.value)
+    }
+
+    @Test
+    fun `onAddressAutoDetected does not overwrite after onCurrentLocationAddressReceived`() {
+        viewModel.onCurrentLocationAddressReceived("Potsdamer Platz, Berlin")
+
+        viewModel.onAddressAutoDetected("Alexanderplatz, Berlin")
+
+        assertEquals("Potsdamer Platz, Berlin", viewModel.addressText.value)
+    }
 }

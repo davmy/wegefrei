@@ -52,6 +52,8 @@ dependencies {
 
     implementation(libs.coil.compose)
 
+    implementation(libs.androidx.exifinterface)
+
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     testImplementation(libs.kotlinx.coroutines.test)
