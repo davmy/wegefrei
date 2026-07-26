@@ -21,18 +21,25 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -72,6 +79,8 @@ internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 @Composable
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
+    onOpenWitnessDetailsRequested: () -> Unit,
+    onWeiterRequested: () -> Unit,
 ) {
     val context = LocalContext.current
     val photoUris by viewModel.photoUris.collectAsState()
@@ -159,6 +168,8 @@ internal fun PhotoCaptureRoot(
                     ),
                 )
             },
+            onOpenWitnessDetailsRequested = onOpenWitnessDetailsRequested,
+            onWeiterRequested = onWeiterRequested,
         )
     }
 }
@@ -191,6 +202,7 @@ private suspend fun lookupAndReportAddress(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PhotoCaptureScreen(
     photoUris: List<Uri>,
@@ -209,6 +221,8 @@ internal fun PhotoCaptureScreen(
     onAddressTextChanged: (String) -> Unit,
     isLookingUpAddress: Boolean,
     onUseCurrentLocationRequested: () -> Unit,
+    onOpenWitnessDetailsRequested: () -> Unit,
+    onWeiterRequested: () -> Unit,
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
@@ -224,7 +238,32 @@ internal fun PhotoCaptureScreen(
         onResult = { granted -> if (granted) onTakePhotoRequested() },
     )
 
-    Scaffold { innerPadding ->
+    var showMenu by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Falschparker melden") },
+                actions = {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menü")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Meine Angaben") },
+                            onClick = {
+                                showMenu = false
+                                onOpenWitnessDetailsRequested()
+                            },
+                        )
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -343,7 +382,7 @@ internal fun PhotoCaptureScreen(
             }
 
             Button(
-                onClick = {},
+                onClick = onWeiterRequested,
                 enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
