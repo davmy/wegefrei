@@ -251,6 +251,12 @@ internal fun PhotoCaptureScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            Text(
+                text = "Für die Adresssuche wird der Standort an OpenStreetMap (Nominatim) übermittelt.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
             if (isLookingUpAddress) {
                 CircularProgressIndicator()
             }
