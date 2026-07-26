@@ -9,8 +9,10 @@ import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Locale
 
-private val EXIF_DATETIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:ss")
+private val EXIF_DATETIME_FORMATTER: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("uuuu:MM:dd HH:mm:ss", Locale.ROOT)
 
 interface PhotoTimestampExtractor {
     suspend fun extractTimestamp(uri: Uri): LocalDateTime?
@@ -24,9 +26,8 @@ internal class ExifPhotoTimestampExtractor(
         try {
             context.contentResolver.openInputStream(uri)?.use { stream ->
                 val exif = ExifInterface(stream)
-                val rawDateTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL)
-                    ?: exif.getAttribute(ExifInterface.TAG_DATETIME)
-                rawDateTime?.let(::parseExifDateTime)
+                parseExifDateTime(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))
+                    ?: parseExifDateTime(exif.getAttribute(ExifInterface.TAG_DATETIME))
             }
         } catch (e: IOException) {
             null
@@ -36,9 +37,11 @@ internal class ExifPhotoTimestampExtractor(
     }
 }
 
-private fun parseExifDateTime(rawDateTime: String): LocalDateTime? =
-    try {
+internal fun parseExifDateTime(rawDateTime: String?): LocalDateTime? {
+    if (rawDateTime == null) return null
+    return try {
         LocalDateTime.parse(rawDateTime, EXIF_DATETIME_FORMATTER).withSecond(0).withNano(0)
     } catch (e: DateTimeParseException) {
         null
     }
+}

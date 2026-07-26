@@ -186,4 +186,14 @@ class PhotoCaptureViewModelTest {
             .toMinutes()
         assertTrue(minutesDifference in -1..1)
     }
+
+    @Test
+    fun `onPhotoTimestampsExtracted does not overwrite a manual edit even when the photo list is empty`() {
+        val manual = LocalDateTime.of(2026, 7, 20, 8, 0)
+        viewModel.onIncidentDateTimeChanged(manual)
+
+        viewModel.onPhotoTimestampsExtracted(emptyList())
+
+        assertEquals(manual, viewModel.incidentDateTime.value)
+    }
 }

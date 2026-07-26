@@ -60,6 +60,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -357,7 +358,8 @@ internal fun PhotoCaptureScreen(
     }
 }
 
-private val INCIDENT_DATE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+private val INCIDENT_DATE_TIME_FORMATTER: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMANY)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
