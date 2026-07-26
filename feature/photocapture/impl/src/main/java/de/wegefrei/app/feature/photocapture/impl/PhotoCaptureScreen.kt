@@ -240,14 +240,14 @@ internal fun PhotoCaptureScreen(
             }
 
             Text(
-                text = "Adresse",
+                text = "Tatort",
                 style = MaterialTheme.typography.titleLarge,
             )
 
             OutlinedTextField(
                 value = addressText,
                 onValueChange = onAddressTextChanged,
-                label = { Text(text = "Adresse") },
+                label = { Text(text = "Tatort") },
                 modifier = Modifier.fillMaxWidth(),
             )
 
