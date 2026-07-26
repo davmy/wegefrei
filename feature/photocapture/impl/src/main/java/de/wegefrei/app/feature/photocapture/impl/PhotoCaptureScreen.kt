@@ -330,6 +330,7 @@ private fun RequiredTextField(
     label: String,
     modifier: Modifier = Modifier,
 ) {
+    var wasFocused by remember { mutableStateOf(false) }
     var touched by remember { mutableStateOf(false) }
     val isError = touched && value.isBlank()
 
@@ -345,7 +346,13 @@ private fun RequiredTextField(
         },
         modifier = modifier
             .fillMaxWidth()
-            .onFocusChanged { focusState -> if (!focusState.isFocused) touched = true },
+            .onFocusChanged { focusState ->
+                if (focusState.isFocused) {
+                    wasFocused = true
+                } else if (wasFocused) {
+                    touched = true
+                }
+            },
     )
 }
 

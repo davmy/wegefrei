@@ -51,13 +51,17 @@ fun onColorTextChanged(text: String) { _colorText.value = text }
   header `Text` + three `OutlinedTextField`s labeled "Kennzeichen *",
   "Marke *", "Farbe *", each `fillMaxWidth()`, matching the existing German
   UI copy style.
-- Each field tracks its own "touched" state locally in Compose
-  (`remember { mutableStateOf(false) }`, set via
-  `Modifier.onFocusChanged { if (!it.isFocused) touched = true }`). Once
-  touched and still blank, the field shows `isError = true` and a
-  `supportingText` of "Pflichtfeld". This is UI-only presentation state —
-  it does not go in the ViewModel, matching how `isLookingUpAddress` is
-  handled today.
+- Each field tracks its own "touched" state locally in Compose via two
+  `remember { mutableStateOf(false) }` flags (`wasFocused`, `touched`) read
+  from `Modifier.onFocusChanged`: `wasFocused` is set once the field
+  genuinely gains focus, and `touched` is only set on the transition from
+  focused back to not-focused (a real blur after a real focus) — this avoids
+  the initial attach-time `onFocusChanged` callback (which fires with
+  `isFocused = false` on first composition) from prematurely marking the
+  field as touched. Once touched and still blank, the field shows
+  `isError = true` and a `supportingText` of "Pflichtfeld". This is UI-only
+  presentation state — it does not go in the ViewModel, matching how
+  `isLookingUpAddress` is handled today.
 - A "Weiter" `Button` at the bottom of the screen (after the "Tatort"
   section), `enabled` only when all three fields
   (`licensePlateText`, `makeText`, `colorText`) are non-blank. `onClick` is
