@@ -58,7 +58,8 @@ internal fun PhotoCaptureRoot(
     val photoUris by viewModel.photoUris.collectAsState()
     val addressText by viewModel.addressText.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
-    var isLookingUpAddress by remember { mutableStateOf(false) }
+    var isLookingUpAddressFromPhoto by remember { mutableStateOf(false) }
+    var isLookingUpAddressFromLocation by remember { mutableStateOf(false) }
 
     val locationExtractor = remember { ExifPhotoLocationExtractor(context) }
     val addressLookupService = remember { NominatimAddressLookupService() }
@@ -67,7 +68,7 @@ internal fun PhotoCaptureRoot(
 
     LaunchedEffect(photoUris.firstOrNull()) {
         val firstUri = photoUris.firstOrNull() ?: return@LaunchedEffect
-        isLookingUpAddress = true
+        isLookingUpAddressFromPhoto = true
         val latLng = locationExtractor.extractLocation(firstUri)
         if (latLng != null) {
             val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
@@ -75,7 +76,7 @@ internal fun PhotoCaptureRoot(
                 viewModel.onAddressAutoDetected(address)
             }
         }
-        isLookingUpAddress = false
+        isLookingUpAddressFromPhoto = false
     }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
@@ -83,7 +84,7 @@ internal fun PhotoCaptureRoot(
         onResult = { granted ->
             if (granted) {
                 coroutineScope.launch {
-                    isLookingUpAddress = true
+                    isLookingUpAddressFromLocation = true
                     val latLng = currentLocationProvider.getCurrentLocation()
                     if (latLng != null) {
                         val address = addressLookupService.reverseGeocode(latLng.latitude, latLng.longitude)
@@ -91,7 +92,7 @@ internal fun PhotoCaptureRoot(
                             viewModel.onCurrentLocationAddressReceived(address)
                         }
                     }
-                    isLookingUpAddress = false
+                    isLookingUpAddressFromLocation = false
                 }
             }
         },
@@ -112,7 +113,7 @@ internal fun PhotoCaptureRoot(
             onPhotoRemoved = viewModel::onPhotoRemoved,
             addressText = addressText,
             onAddressTextChanged = viewModel::onAddressTextChanged,
-            isLookingUpAddress = isLookingUpAddress,
+            isLookingUpAddress = isLookingUpAddressFromPhoto || isLookingUpAddressFromLocation,
             onUseCurrentLocationRequested = {
                 locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             },
