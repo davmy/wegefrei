@@ -243,6 +243,18 @@ class PhotoCaptureViewModelTest {
     }
 
     @Test
+    fun `obstructionDetailsText defaults to blank`() {
+        assertEquals("", viewModel.obstructionDetailsText.value)
+    }
+
+    @Test
+    fun `onObstructionDetailsTextChanged sets the obstruction details text`() {
+        viewModel.onObstructionDetailsTextChanged("Radfahrer muss auf die Fahrspur ausweichen")
+
+        assertEquals("Radfahrer muss auf die Fahrspur ausweichen", viewModel.obstructionDetailsText.value)
+    }
+
+    @Test
     fun `durationOver60MinutesText defaults to Nein`() {
         assertEquals("Nein", viewModel.durationOver60MinutesText.value)
     }

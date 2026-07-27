@@ -130,6 +130,7 @@ internal fun PhotoCaptureRoot(
     val parkOrHaltText by viewModel.parkOrHaltText.collectAsState()
     val violationText by viewModel.violationText.collectAsState()
     val obstructionText by viewModel.obstructionText.collectAsState()
+    val obstructionDetailsText by viewModel.obstructionDetailsText.collectAsState()
     val durationOver60MinutesText by viewModel.durationOver60MinutesText.collectAsState()
     val incidentDateTime by viewModel.incidentDateTime.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
@@ -204,6 +205,8 @@ internal fun PhotoCaptureRoot(
             onViolationTextChanged = viewModel::onViolationTextChanged,
             obstructionText = obstructionText,
             onObstructionTextChanged = viewModel::onObstructionTextChanged,
+            obstructionDetailsText = obstructionDetailsText,
+            onObstructionDetailsTextChanged = viewModel::onObstructionDetailsTextChanged,
             durationOver60MinutesText = durationOver60MinutesText,
             onDurationOver60MinutesTextChanged = viewModel::onDurationOver60MinutesTextChanged,
             incidentDateTime = incidentDateTime,
@@ -272,6 +275,8 @@ internal fun PhotoCaptureScreen(
     onViolationTextChanged: (String) -> Unit,
     obstructionText: String,
     onObstructionTextChanged: (String) -> Unit,
+    obstructionDetailsText: String,
+    onObstructionDetailsTextChanged: (String) -> Unit,
     durationOver60MinutesText: String,
     onDurationOver60MinutesTextChanged: (String) -> Unit,
     incidentDateTime: LocalDateTime,
@@ -494,6 +499,14 @@ internal fun PhotoCaptureScreen(
                 offLabel = "Nein",
             )
 
+            if (obstructionText == "Ja") {
+                RequiredTextField(
+                    value = obstructionDetailsText,
+                    onValueChange = onObstructionDetailsTextChanged,
+                    label = "Details zur Behinderung",
+                )
+            }
+
             if (parkOrHaltText == "Parken") {
                 RequiredSwitchField(
                     value = durationOver60MinutesText,
@@ -514,14 +527,16 @@ internal fun PhotoCaptureScreen(
                             address = addressText,
                             incidentDateTime = incidentDateTime,
                             violation = violationText,
-                            obstruction = obstructionText,
+                            obstruction = if (obstructionText == "Ja") obstructionDetailsText else "",
                             durationOver60Minutes = if (parkOrHaltText == "Parken") durationOver60MinutesText else "",
                             photoUris = photoUris,
                         ),
                     )
                 },
                 enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank() &&
-                    violationText.isNotBlank() && obstructionText.isNotBlank() && addressText.isNotBlank(),
+                    violationText.isNotBlank() && obstructionText.isNotBlank() &&
+                    (obstructionText != "Ja" || obstructionDetailsText.isNotBlank()) &&
+                    addressText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Weiter")
