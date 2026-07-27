@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -49,6 +50,7 @@ internal fun WitnessDetailsRoot(
     val name by viewModel.name.collectAsState()
     val address by viewModel.address.collectAsState()
     val email by viewModel.email.collectAsState()
+    val authorityEmail by viewModel.authorityEmail.collectAsState()
 
     WitnessDetailsScreen(
         name = name,
@@ -57,6 +59,8 @@ internal fun WitnessDetailsRoot(
         onAddressChanged = viewModel::onAddressChanged,
         email = email,
         onEmailChanged = viewModel::onEmailChanged,
+        authorityEmail = authorityEmail,
+        onAuthorityEmailChanged = viewModel::onAuthorityEmailChanged,
         onBackRequested = onBackRequested,
     )
 }
@@ -70,6 +74,8 @@ internal fun WitnessDetailsScreen(
     onAddressChanged: (String) -> Unit,
     email: String,
     onEmailChanged: (String) -> Unit,
+    authorityEmail: String,
+    onAuthorityEmailChanged: (String) -> Unit,
     onBackRequested: () -> Unit,
 ) {
     Scaffold(
@@ -120,6 +126,16 @@ internal fun WitnessDetailsScreen(
                     }
                 },
             )
+
+            HorizontalDivider()
+
+            WitnessTextField(
+                value = authorityEmail,
+                onValueChange = onAuthorityEmailChanged,
+                label = "E-Mail Ordnungsamt",
+                required = false,
+                validate = { value -> if (value.isNotBlank() && !isValidEmail(value)) "Ungültige E-Mail-Adresse" else null },
+            )
         }
     }
 }
@@ -130,6 +146,7 @@ private fun WitnessTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    required: Boolean = true,
     validate: (String) -> String? = { if (it.isBlank()) "Pflichtfeld" else null },
 ) {
     var wasFocused by remember { mutableStateOf(false) }
@@ -139,7 +156,7 @@ private fun WitnessTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = "$label *") },
+        label = { Text(text = if (required) "$label *" else label) },
         isError = errorMessage != null,
         supportingText = errorMessage?.let { message -> { Text(text = message) } },
         modifier = modifier
