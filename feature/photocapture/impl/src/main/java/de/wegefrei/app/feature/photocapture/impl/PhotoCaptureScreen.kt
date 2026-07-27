@@ -110,6 +110,9 @@ internal val germanTrafficViolations = listOf(
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
 
+internal fun trafficViolationOptions(parkOrHalt: String): List<String> =
+    germanTrafficViolations.map { it.replaceFirst("Parken", parkOrHalt) }
+
 @Composable
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
@@ -122,6 +125,7 @@ internal fun PhotoCaptureRoot(
     val licensePlateText by viewModel.licensePlateText.collectAsState()
     val makeText by viewModel.makeText.collectAsState()
     val colorText by viewModel.colorText.collectAsState()
+    val parkOrHaltText by viewModel.parkOrHaltText.collectAsState()
     val violationText by viewModel.violationText.collectAsState()
     val obstructionText by viewModel.obstructionText.collectAsState()
     val durationOver60MinutesText by viewModel.durationOver60MinutesText.collectAsState()
@@ -192,6 +196,8 @@ internal fun PhotoCaptureRoot(
             onMakeTextChanged = viewModel::onMakeTextChanged,
             colorText = colorText,
             onColorTextChanged = viewModel::onColorTextChanged,
+            parkOrHaltText = parkOrHaltText,
+            onParkOrHaltTextChanged = viewModel::onParkOrHaltTextChanged,
             violationText = violationText,
             onViolationTextChanged = viewModel::onViolationTextChanged,
             obstructionText = obstructionText,
@@ -258,6 +264,8 @@ internal fun PhotoCaptureScreen(
     onMakeTextChanged: (String) -> Unit,
     colorText: String,
     onColorTextChanged: (String) -> Unit,
+    parkOrHaltText: String,
+    onParkOrHaltTextChanged: (String) -> Unit,
     violationText: String,
     onViolationTextChanged: (String) -> Unit,
     obstructionText: String,
@@ -436,11 +444,19 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
+            RequiredSwitchField(
+                value = parkOrHaltText,
+                onValueChange = onParkOrHaltTextChanged,
+                label = parkOrHaltText,
+                onLabel = "Parken",
+                offLabel = "Halten",
+            )
+
             RequiredOptionDropdownField(
                 value = violationText,
                 onValueChange = onViolationTextChanged,
                 label = "Verstoß",
-                options = germanTrafficViolations,
+                options = trafficViolationOptions(parkOrHaltText),
             )
 
             RequiredSwitchField(

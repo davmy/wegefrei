@@ -26,6 +26,9 @@ internal class PhotoCaptureViewModel : ViewModel() {
     private val _colorText = MutableStateFlow("")
     val colorText: StateFlow<String> = _colorText.asStateFlow()
 
+    private val _parkOrHaltText = MutableStateFlow("Parken")
+    val parkOrHaltText: StateFlow<String> = _parkOrHaltText.asStateFlow()
+
     private val _violationText = MutableStateFlow("")
     val violationText: StateFlow<String> = _violationText.asStateFlow()
 
@@ -87,6 +90,12 @@ internal class PhotoCaptureViewModel : ViewModel() {
 
     fun onViolationTextChanged(text: String) {
         _violationText.value = text
+    }
+
+    fun onParkOrHaltTextChanged(text: String) {
+        val previous = _parkOrHaltText.value
+        _parkOrHaltText.value = text
+        _violationText.value = _violationText.value.replaceFirst(previous, text)
     }
 
     fun onObstructionTextChanged(text: String) {

@@ -77,4 +77,33 @@ class FilterOptionsTest {
             result,
         )
     }
+
+    @Test
+    fun `trafficViolationOptions returns Parken options unchanged`() {
+        val result = trafficViolationOptions("Parken")
+
+        assertEquals(germanTrafficViolations, result)
+    }
+
+    @Test
+    fun `trafficViolationOptions replaces the leading Parken with Halten`() {
+        val result = trafficViolationOptions("Halten")
+
+        assertEquals(
+            listOf(
+                "Halten auf Gehweg",
+                "Halten im absoluten Halteverbot",
+                "Halten weniger als 5 Meter von Kreuzung",
+                "Halten weniger als 5 Meter von Einmündung",
+                "Halten auf Radweg (Zeichen 237)",
+                "Halten auf Radfahrstreifen",
+                "Halten auf Geh- und Radweg (Zeichen 240/241)",
+                "Halten auf Sperrfläche",
+                "Halten auf unbeschildertem Radweg",
+                "Halten in verkehrsberuhigten Bereich (Zeichen 325.1)",
+                "Halten in eingeschränktem Halteverbot (Zeichen 286)",
+            ),
+            result,
+        )
+    }
 }

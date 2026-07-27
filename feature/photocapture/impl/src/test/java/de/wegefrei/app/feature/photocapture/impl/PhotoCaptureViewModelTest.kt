@@ -205,6 +205,37 @@ class PhotoCaptureViewModelTest {
     }
 
     @Test
+    fun `parkOrHaltText defaults to Parken`() {
+        assertEquals("Parken", viewModel.parkOrHaltText.value)
+    }
+
+    @Test
+    fun `onParkOrHaltTextChanged sets the parkOrHalt text`() {
+        viewModel.onParkOrHaltTextChanged("Halten")
+
+        assertEquals("Halten", viewModel.parkOrHaltText.value)
+    }
+
+    @Test
+    fun `onParkOrHaltTextChanged replaces the leading Parken in the violation text with Halten`() {
+        viewModel.onViolationTextChanged("Parken im absoluten Halteverbot")
+
+        viewModel.onParkOrHaltTextChanged("Halten")
+
+        assertEquals("Halten im absoluten Halteverbot", viewModel.violationText.value)
+    }
+
+    @Test
+    fun `onParkOrHaltTextChanged back to Parken restores the violation text`() {
+        viewModel.onViolationTextChanged("Parken im absoluten Halteverbot")
+        viewModel.onParkOrHaltTextChanged("Halten")
+
+        viewModel.onParkOrHaltTextChanged("Parken")
+
+        assertEquals("Parken im absoluten Halteverbot", viewModel.violationText.value)
+    }
+
+    @Test
     fun `onObstructionTextChanged sets the obstruction text`() {
         viewModel.onObstructionTextChanged("Radfahrer muss auf die Fahrspur ausweichen")
 
