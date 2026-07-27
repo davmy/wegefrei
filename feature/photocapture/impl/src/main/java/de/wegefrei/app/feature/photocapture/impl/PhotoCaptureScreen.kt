@@ -303,7 +303,7 @@ internal fun PhotoCaptureScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = "Fotos des Falschparkers",
+                text = "Beweisfotos",
                 style = MaterialTheme.typography.titleLarge,
             )
 
