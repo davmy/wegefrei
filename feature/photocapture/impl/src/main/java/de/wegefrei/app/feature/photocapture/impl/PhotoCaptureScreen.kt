@@ -124,6 +124,7 @@ internal fun PhotoCaptureRoot(
     val colorText by viewModel.colorText.collectAsState()
     val violationText by viewModel.violationText.collectAsState()
     val obstructionText by viewModel.obstructionText.collectAsState()
+    val durationOver60MinutesText by viewModel.durationOver60MinutesText.collectAsState()
     val incidentDateTime by viewModel.incidentDateTime.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
     var isLookingUpAddressFromPhoto by remember { mutableStateOf(false) }
@@ -195,6 +196,8 @@ internal fun PhotoCaptureRoot(
             onViolationTextChanged = viewModel::onViolationTextChanged,
             obstructionText = obstructionText,
             onObstructionTextChanged = viewModel::onObstructionTextChanged,
+            durationOver60MinutesText = durationOver60MinutesText,
+            onDurationOver60MinutesTextChanged = viewModel::onDurationOver60MinutesTextChanged,
             incidentDateTime = incidentDateTime,
             onIncidentDateTimeChanged = viewModel::onIncidentDateTimeChanged,
             addressText = addressText,
@@ -259,6 +262,8 @@ internal fun PhotoCaptureScreen(
     onViolationTextChanged: (String) -> Unit,
     obstructionText: String,
     onObstructionTextChanged: (String) -> Unit,
+    durationOver60MinutesText: String,
+    onDurationOver60MinutesTextChanged: (String) -> Unit,
     incidentDateTime: LocalDateTime,
     onIncidentDateTimeChanged: (LocalDateTime) -> Unit,
     addressText: String,
@@ -446,6 +451,14 @@ internal fun PhotoCaptureScreen(
                 offLabel = "Nein",
             )
 
+            RequiredSwitchField(
+                value = durationOver60MinutesText,
+                onValueChange = onDurationOver60MinutesTextChanged,
+                label = "Mehr als 60 Minuten",
+                onLabel = "Ja",
+                offLabel = "Nein",
+            )
+
             Button(
                 onClick = {
                     onWeiterRequested(
@@ -457,6 +470,7 @@ internal fun PhotoCaptureScreen(
                             incidentDateTime = incidentDateTime,
                             violation = violationText,
                             obstruction = obstructionText,
+                            durationOver60Minutes = durationOver60MinutesText,
                             photoUris = photoUris,
                         ),
                     )
