@@ -387,11 +387,10 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            OutlinedTextField(
+            RequiredTextField(
                 value = addressText,
                 onValueChange = onAddressTextChanged,
-                label = { Text(text = "Tatort") },
-                modifier = Modifier.fillMaxWidth(),
+                label = "Tatort",
             )
 
             Text(
