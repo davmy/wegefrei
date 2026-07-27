@@ -25,7 +25,16 @@ internal class CompressingEmailAttachmentPreparer(
 ) : EmailAttachmentPreparer {
 
     override suspend fun prepareAttachments(photoUris: List<Uri>): List<Uri> = withContext(Dispatchers.IO) {
-        val outputDir = File(context.cacheDir, "report_photos/${System.currentTimeMillis()}").apply { mkdirs() }
+        val reportPhotosDir = File(context.cacheDir, "report_photos")
+        // Reclaim space from earlier reports before creating this one's directory. By the
+        // time a new report is being prepared, any prior report's email has already been
+        // handed off (or abandoned), so those compressed photos — which can contain other
+        // people's license plates, faces, and GPS-tagged locations — no longer need to sit in
+        // cache. Only pre-existing directories are removed, never the one about to be
+        // created, so there's no race with a mail app still reading the current attachments.
+        reportPhotosDir.listFiles()?.forEach { it.deleteRecursively() }
+
+        val outputDir = File(reportPhotosDir, "${System.currentTimeMillis()}").apply { mkdirs() }
         photoUris.mapIndexedNotNull { index, uri -> compressAndStore(uri, index, outputDir) }
     }
 
