@@ -102,7 +102,7 @@ internal val germanTrafficViolations = listOf(
     "Parken weniger als 5 Meter von Einmündung",
     "Parken auf Radweg (Zeichen 237)",
     "Parken auf Radfahrstreifen",
-    "Parken auf Geh- und Radweg (Zeichen 240/241)",
+    "Parken auf Geh- und Radweg (Zeichen 240 / 241)",
     "Parken auf Sperrfläche",
     "Parken auf unbeschildertem Radweg",
     "Parken in verkehrsberuhigten Bereich (Zeichen 325.1)",

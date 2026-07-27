@@ -71,7 +71,7 @@ class FilterOptionsTest {
         assertEquals(
             listOf(
                 "Parken auf Radweg (Zeichen 237)",
-                "Parken auf Geh- und Radweg (Zeichen 240/241)",
+                "Parken auf Geh- und Radweg (Zeichen 240 / 241)",
                 "Parken auf unbeschildertem Radweg",
             ),
             result,
@@ -97,7 +97,7 @@ class FilterOptionsTest {
                 "Halten weniger als 5 Meter von Einmündung",
                 "Halten auf Radweg (Zeichen 237)",
                 "Halten auf Radfahrstreifen",
-                "Halten auf Geh- und Radweg (Zeichen 240/241)",
+                "Halten auf Geh- und Radweg (Zeichen 240 / 241)",
                 "Halten auf Sperrfläche",
                 "Halten auf unbeschildertem Radweg",
                 "Halten in verkehrsberuhigten Bereich (Zeichen 325.1)",
