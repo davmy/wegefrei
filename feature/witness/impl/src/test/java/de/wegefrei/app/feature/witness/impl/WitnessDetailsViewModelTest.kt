@@ -53,6 +53,21 @@ class WitnessDetailsViewModelTest {
     }
 
     @Test
+    fun `ordnungsamtEmail defaults to blank`() {
+        assertEquals("", viewModel.ordnungsamtEmail.value)
+    }
+
+    @Test
+    fun `onOrdnungsamtEmailChanged updates the state without persisting it`() {
+        viewModel.onOrdnungsamtEmailChanged("ordnungsamt@example.com")
+
+        assertEquals("ordnungsamt@example.com", viewModel.ordnungsamtEmail.value)
+        assertEquals(null, repository.savedName)
+        assertEquals(null, repository.savedAddress)
+        assertEquals(null, repository.savedEmail)
+    }
+
+    @Test
     fun `loads persisted values from the repository on init`() {
         val prefilled = FakeWitnessDetailsRepository(
             initialName = "Erika Musterfrau",
