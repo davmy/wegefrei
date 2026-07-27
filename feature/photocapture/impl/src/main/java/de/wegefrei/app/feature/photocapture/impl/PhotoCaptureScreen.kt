@@ -86,8 +86,13 @@ private val germanCarBrands = listOf(
     "Smart", "Honda", "Suzuki", "Tesla",
 )
 
-internal fun filterCarBrands(query: String): List<String> =
-    germanCarBrands.filter { it.contains(query, ignoreCase = true) }
+private val germanCarColors = listOf(
+    "Schwarz", "Weiß", "Silber", "Grau", "Blau", "Rot", "Braun", "Grün",
+    "Beige", "Gelb", "Orange", "Violett", "Gold", "Bronze",
+)
+
+internal fun filterOptions(query: String, options: List<String>): List<String> =
+    options.filter { it.contains(query, ignoreCase = true) }
 
 @Composable
 internal fun PhotoCaptureRoot(
@@ -353,15 +358,18 @@ internal fun PhotoCaptureScreen(
                 label = "Kennzeichen",
             )
 
-            RequiredBrandDropdownField(
+            RequiredOptionDropdownField(
                 value = makeText,
                 onValueChange = onMakeTextChanged,
+                label = "Marke",
+                options = germanCarBrands,
             )
 
-            RequiredTextField(
+            RequiredOptionDropdownField(
                 value = colorText,
                 onValueChange = onColorTextChanged,
                 label = "Farbe",
+                options = germanCarColors,
             )
 
             Text(
@@ -575,21 +583,23 @@ private fun RequiredTextField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RequiredBrandDropdownField(
+private fun RequiredOptionDropdownField(
     value: String,
     onValueChange: (String) -> Unit,
+    label: String,
+    options: List<String>,
     modifier: Modifier = Modifier,
 ) {
     var wasFocused by remember { mutableStateOf(false) }
     var touched by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     val isError = touched && value.isBlank()
-    val filteredBrands = remember(value) {
-        filterCarBrands(value)
+    val filteredOptions = remember(value, options) {
+        filterOptions(value, options)
     }
 
     ExposedDropdownMenuBox(
-        expanded = expanded && filteredBrands.isNotEmpty(),
+        expanded = expanded && filteredOptions.isNotEmpty(),
         onExpandedChange = { expanded = it },
         modifier = modifier,
     ) {
@@ -599,7 +609,7 @@ private fun RequiredBrandDropdownField(
                 onValueChange(it)
                 expanded = true
             },
-            label = { Text(text = "Marke *") },
+            label = { Text(text = "$label *") },
             isError = isError,
             supportingText = if (isError) {
                 { Text(text = "Pflichtfeld") }
@@ -627,14 +637,14 @@ private fun RequiredBrandDropdownField(
         )
 
         ExposedDropdownMenu(
-            expanded = expanded && filteredBrands.isNotEmpty(),
+            expanded = expanded && filteredOptions.isNotEmpty(),
             onDismissRequest = { expanded = false },
         ) {
-            filteredBrands.forEach { brand ->
+            filteredOptions.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = brand) },
+                    text = { Text(text = option) },
                     onClick = {
-                        onValueChange(brand)
+                        onValueChange(option)
                         expanded = false
                     },
                 )
