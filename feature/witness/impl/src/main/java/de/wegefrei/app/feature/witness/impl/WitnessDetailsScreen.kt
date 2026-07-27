@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -83,12 +84,12 @@ internal fun WitnessDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Meine Angaben") },
+                title = { Text(text = stringResource(R.string.title_witness_details_screen)) },
                 navigationIcon = {
                     IconButton(onClick = onBackRequested) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Zurück",
+                            contentDescription = stringResource(R.string.cd_back),
                         )
                     }
                 },
@@ -113,23 +114,23 @@ internal fun WitnessDetailsScreen(
             WitnessTextField(
                 value = name,
                 onValueChange = onNameChanged,
-                label = "Name",
+                label = stringResource(R.string.label_name),
             )
 
             WitnessTextField(
                 value = address,
                 onValueChange = onAddressChanged,
-                label = "Adresse",
+                label = stringResource(R.string.label_address),
             )
 
             WitnessTextField(
                 value = email,
                 onValueChange = onEmailChanged,
-                label = "E-Mail",
+                label = stringResource(R.string.label_email),
                 validate = { value ->
                     when {
-                        value.isBlank() -> "Pflichtfeld"
-                        !isValidEmail(value) -> "Ungültige E-Mail-Adresse"
+                        value.isBlank() -> stringResource(R.string.error_required_field)
+                        !isValidEmail(value) -> stringResource(R.string.error_invalid_email)
                         else -> null
                     }
                 },
@@ -140,9 +141,11 @@ internal fun WitnessDetailsScreen(
             WitnessTextField(
                 value = authorityEmail,
                 onValueChange = onAuthorityEmailChanged,
-                label = "E-Mail Ordnungsamt",
+                label = stringResource(R.string.label_email_authority),
                 required = false,
-                validate = { value -> if (value.isNotBlank() && !isValidEmail(value)) "Ungültige E-Mail-Adresse" else null },
+                validate = { value ->
+                    if (value.isNotBlank() && !isValidEmail(value)) stringResource(R.string.error_invalid_email) else null
+                },
             )
         }
     }
@@ -155,7 +158,7 @@ private fun WitnessTextField(
     label: String,
     modifier: Modifier = Modifier,
     required: Boolean = true,
-    validate: (String) -> String? = { if (it.isBlank()) "Pflichtfeld" else null },
+    validate: @Composable (String) -> String? = { if (it.isBlank()) stringResource(R.string.error_required_field) else null },
 ) {
     var wasFocused by remember { mutableStateOf(false) }
     var touched by remember { mutableStateOf(false) }
@@ -164,7 +167,7 @@ private fun WitnessTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = if (required) "$label *" else label) },
+        label = { Text(text = if (required) stringResource(R.string.label_required_suffix, label) else label) },
         isError = errorMessage != null,
         supportingText = errorMessage?.let { message -> { Text(text = message) } },
         modifier = modifier

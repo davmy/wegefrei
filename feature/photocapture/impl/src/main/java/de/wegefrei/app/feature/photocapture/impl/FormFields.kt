@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.stringResource
 
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
@@ -38,10 +39,10 @@ internal fun RequiredTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = "$label *") },
+        label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
         isError = isError,
         supportingText = if (isError) {
-            { Text(text = "Pflichtfeld") }
+            { Text(text = stringResource(R.string.error_required_field)) }
         } else {
             null
         },
@@ -107,10 +108,10 @@ internal fun RequiredOptionDropdownField(
                 onValueChange(it)
                 expanded = true
             },
-            label = { Text(text = "$label *") },
+            label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
             isError = isError,
             supportingText = if (isError) {
-                { Text(text = "Pflichtfeld") }
+                { Text(text = stringResource(R.string.error_required_field)) }
             } else {
                 null
             },

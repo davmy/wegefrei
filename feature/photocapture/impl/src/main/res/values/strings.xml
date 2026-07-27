@@ -1,0 +1,33 @@
+<resources>
+    <string name="title_photo_capture_screen">Falschparker melden</string>
+    <string name="cd_menu">Menü</string>
+    <string name="menu_item_my_details">Meine Angaben</string>
+    <string name="section_title_photos">Beweisfotos</string>
+    <string name="label_photo_count">%1$d / %2$d Fotos</string>
+    <string name="button_choose_from_gallery">Aus Galerie wählen</string>
+    <string name="button_take_photo">Foto aufnehmen</string>
+    <string name="section_title_vehicle">Fahrzeug</string>
+    <string name="label_license_plate">Kennzeichen</string>
+    <string name="label_make">Marke</string>
+    <string name="label_color">Farbe</string>
+    <string name="section_title_incident_time">Tatzeitpunkt</string>
+    <string name="section_title_location">Tatort</string>
+    <string name="label_location">Tatort</string>
+    <string name="info_address_lookup_disclaimer">Für die Adresssuche wird der Standort an OpenStreetMap (Nominatim) übermittelt.</string>
+    <string name="button_use_current_location">Aktuellen Standort verwenden</string>
+    <string name="section_title_violation">Verstoß</string>
+    <string name="cd_park_or_halt_info">Erklärung zu Parken/Halten</string>
+    <string name="dialog_confirm_ok">OK</string>
+    <string name="dialog_text_park_explanation">Parken liegt vor, wenn das Fahrzeug länger als 3 Minuten steht oder der Fahrer es verlässt.</string>
+    <string name="label_violation">Verstoß</string>
+    <string name="label_obstruction">Behinderung</string>
+    <string name="label_obstruction_details">Details zur Behinderung</string>
+    <string name="label_duration_over_60_minutes">Mehr als 60 Minuten</string>
+    <string name="button_next">Weiter</string>
+    <string name="dialog_cancel">Abbrechen</string>
+    <string name="cd_photo_thumbnail">Foto</string>
+    <string name="label_close_symbol">×</string>
+    <string name="cd_photo_preview">Fotovorschau</string>
+    <string name="label_required_suffix">%1$s *</string>
+    <string name="error_required_field">Pflichtfeld</string>
+</resources>
