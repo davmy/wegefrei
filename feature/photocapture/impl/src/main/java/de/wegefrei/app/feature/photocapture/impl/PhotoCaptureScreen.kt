@@ -91,6 +91,20 @@ internal val germanCarColors = listOf(
     "Beige", "Gelb", "Orange", "Violett", "Gold", "Bronze",
 )
 
+internal val germanTrafficViolations = listOf(
+    "Parken auf Gehweg",
+    "Parken im absoluten Halteverbot",
+    "Parken weniger als 5 Meter von Kreuzung",
+    "Parken weniger als 5 Meter von Einmündung",
+    "Parken auf Radweg (Zeichen 237)",
+    "Parken auf Radfahrstreifen",
+    "Parken auf Geh- und Radweg (Zeichen 240/241)",
+    "Parken auf Sperrfläche",
+    "Parken auf unbeschildertem Radweg",
+    "Parken in verkehrsberuhigten Bereich (Zeichen 325.1)",
+    "Parken in eingeschränktem Halteverbot (Zeichen 286)",
+)
+
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
 
@@ -416,10 +430,11 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            RequiredTextField(
+            RequiredOptionDropdownField(
                 value = violationText,
                 onValueChange = onViolationTextChanged,
                 label = "Verstoß",
+                options = germanTrafficViolations,
             )
 
             RequiredTextField(
