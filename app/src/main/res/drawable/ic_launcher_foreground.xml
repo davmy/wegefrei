@@ -3,7 +3,15 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Stylized "Absolutes Halteverbot" (Zeichen 283 / no-stopping) sign: blue disc,
+         red ring, red diagonal bar — matching the parking-violation focus of this app. -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,24 L74,44 L74,84 L34,84 L34,44 Z" />
+        android:fillColor="#D32F2F"
+        android:pathData="M21,54 A33,33 0 1,0 87,54 A33,33 0 1,0 21,54 Z" />
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M27,54 A27,27 0 1,0 81,54 A27,27 0 1,0 27,54 Z" />
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M68.14,76.62 L76.62,68.14 L39.86,31.38 L31.38,39.86 Z" />
 </vector>
