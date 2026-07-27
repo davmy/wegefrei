@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -41,8 +39,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -64,7 +62,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -442,11 +439,12 @@ internal fun PhotoCaptureScreen(
                 options = germanTrafficViolations,
             )
 
-            RequiredRadioButtonField(
+            RequiredSwitchField(
                 value = obstructionText,
                 onValueChange = onObstructionTextChanged,
                 label = "Behinderung",
-                options = listOf("Ja", "Nein"),
+                onLabel = "Ja",
+                offLabel = "Nein",
             )
 
             Button(
@@ -603,33 +601,24 @@ private fun RequiredTextField(
 }
 
 @Composable
-private fun RequiredRadioButtonField(
+private fun RequiredSwitchField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    options: List<String>,
+    onLabel: String,
+    offLabel: String,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(text = "$label *", style = MaterialTheme.typography.bodyLarge)
-
-        Column(modifier = Modifier.selectableGroup()) {
-            options.forEach { option ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .selectable(
-                            selected = value == option,
-                            onClick = { onValueChange(option) },
-                            role = Role.RadioButton,
-                        ),
-                ) {
-                    RadioButton(selected = value == option, onClick = null)
-                    Text(text = option, modifier = Modifier.padding(start = 8.dp))
-                }
-            }
-        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+        Switch(
+            checked = value == onLabel,
+            onCheckedChange = { checked -> onValueChange(if (checked) onLabel else offLabel) },
+        )
     }
 }
 
