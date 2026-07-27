@@ -80,7 +80,7 @@ internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
     onOpenWitnessDetailsRequested: () -> Unit,
-    onWeiterRequested: () -> Unit,
+    onWeiterRequested: (ReportDetails) -> Unit,
 ) {
     val context = LocalContext.current
     val photoUris by viewModel.photoUris.collectAsState()
@@ -88,6 +88,8 @@ internal fun PhotoCaptureRoot(
     val licensePlateText by viewModel.licensePlateText.collectAsState()
     val makeText by viewModel.makeText.collectAsState()
     val colorText by viewModel.colorText.collectAsState()
+    val violationText by viewModel.violationText.collectAsState()
+    val obstructionText by viewModel.obstructionText.collectAsState()
     val incidentDateTime by viewModel.incidentDateTime.collectAsState()
     var showCamera by remember { mutableStateOf(false) }
     var isLookingUpAddressFromPhoto by remember { mutableStateOf(false) }
@@ -155,6 +157,10 @@ internal fun PhotoCaptureRoot(
             onMakeTextChanged = viewModel::onMakeTextChanged,
             colorText = colorText,
             onColorTextChanged = viewModel::onColorTextChanged,
+            violationText = violationText,
+            onViolationTextChanged = viewModel::onViolationTextChanged,
+            obstructionText = obstructionText,
+            onObstructionTextChanged = viewModel::onObstructionTextChanged,
             incidentDateTime = incidentDateTime,
             onIncidentDateTimeChanged = viewModel::onIncidentDateTimeChanged,
             addressText = addressText,
@@ -215,6 +221,10 @@ internal fun PhotoCaptureScreen(
     onMakeTextChanged: (String) -> Unit,
     colorText: String,
     onColorTextChanged: (String) -> Unit,
+    violationText: String,
+    onViolationTextChanged: (String) -> Unit,
+    obstructionText: String,
+    onObstructionTextChanged: (String) -> Unit,
     incidentDateTime: LocalDateTime,
     onIncidentDateTimeChanged: (LocalDateTime) -> Unit,
     addressText: String,
@@ -222,7 +232,7 @@ internal fun PhotoCaptureScreen(
     isLookingUpAddress: Boolean,
     onUseCurrentLocationRequested: () -> Unit,
     onOpenWitnessDetailsRequested: () -> Unit,
-    onWeiterRequested: () -> Unit,
+    onWeiterRequested: (ReportDetails) -> Unit,
 ) {
     val remainingSlots = MAX_PHOTOS - photoUris.size
     val canAddMore = remainingSlots > 0
@@ -381,9 +391,40 @@ internal fun PhotoCaptureScreen(
                 Text(text = "Aktuellen Standort verwenden")
             }
 
+            Text(
+                text = "Verstoß",
+                style = MaterialTheme.typography.titleLarge,
+            )
+
+            RequiredTextField(
+                value = violationText,
+                onValueChange = onViolationTextChanged,
+                label = "Verstoß",
+            )
+
+            RequiredTextField(
+                value = obstructionText,
+                onValueChange = onObstructionTextChanged,
+                label = "Behinderung",
+            )
+
             Button(
-                onClick = onWeiterRequested,
-                enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank(),
+                onClick = {
+                    onWeiterRequested(
+                        ReportDetails(
+                            licensePlate = licensePlateText,
+                            make = makeText,
+                            color = colorText,
+                            address = addressText,
+                            incidentDateTime = incidentDateTime,
+                            violation = violationText,
+                            obstruction = obstructionText,
+                            photoUris = photoUris,
+                        ),
+                    )
+                },
+                enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank() &&
+                    violationText.isNotBlank() && obstructionText.isNotBlank() && addressText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Weiter")

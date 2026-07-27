@@ -196,4 +196,18 @@ class PhotoCaptureViewModelTest {
 
         assertEquals(manual, viewModel.incidentDateTime.value)
     }
+
+    @Test
+    fun `onViolationTextChanged sets the violation text`() {
+        viewModel.onViolationTextChanged("Parken im absoluten Halteverbot")
+
+        assertEquals("Parken im absoluten Halteverbot", viewModel.violationText.value)
+    }
+
+    @Test
+    fun `onObstructionTextChanged sets the obstruction text`() {
+        viewModel.onObstructionTextChanged("Radfahrer muss auf die Fahrspur ausweichen")
+
+        assertEquals("Radfahrer muss auf die Fahrspur ausweichen", viewModel.obstructionText.value)
+    }
 }

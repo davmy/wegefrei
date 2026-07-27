@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private val Context.witnessDetailsDataStore by preferencesDataStore(name = "witness_details")
@@ -43,4 +44,19 @@ internal class DataStoreWitnessDetailsRepository(
     override suspend fun saveEmail(value: String) {
         appContext.witnessDetailsDataStore.edit { it[EMAIL_KEY] = value }
     }
+}
+
+data class WitnessDetails(
+    val name: String,
+    val address: String,
+    val email: String,
+)
+
+suspend fun readWitnessDetails(context: Context): WitnessDetails {
+    val repository = DataStoreWitnessDetailsRepository(context)
+    return WitnessDetails(
+        name = repository.name.first(),
+        address = repository.address.first(),
+        email = repository.email.first(),
+    )
 }

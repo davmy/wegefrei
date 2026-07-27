@@ -6,7 +6,7 @@ import de.wegefrei.app.feature.photocapture.api.PhotoCaptureRoute
 
 fun NavGraphBuilder.photoCaptureScreen(
     onOpenWitnessDetailsRequested: () -> Unit,
-    onWeiterRequested: () -> Unit,
+    onWeiterRequested: (ReportDetails) -> Unit,
 ) {
     composable<PhotoCaptureRoute> {
         PhotoCaptureRoot(
