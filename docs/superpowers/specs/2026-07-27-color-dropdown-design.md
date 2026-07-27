@@ -65,7 +65,7 @@ KBA color-share data), roughly descending by share, placed next to
 `germanCarBrands`:
 
 ```kotlin
-private val germanCarColors = listOf(
+internal val germanCarColors = listOf(
     "Schwarz", "Weiß", "Silber", "Grau", "Blau", "Rot", "Braun", "Grün",
     "Beige", "Gelb", "Orange", "Violett", "Gold", "Bronze",
 )

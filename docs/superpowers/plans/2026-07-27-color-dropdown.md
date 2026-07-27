@@ -38,7 +38,7 @@ This is a single self-contained task — one file's worth of composable refactor
 In `PhotoCaptureScreen.kt`, right after the existing `germanCarBrands` list (it currently ends right before `internal fun filterCarBrands`), add:
 
 ```kotlin
-private val germanCarColors = listOf(
+internal val germanCarColors = listOf(
     "Schwarz", "Weiß", "Silber", "Grau", "Blau", "Rot", "Braun", "Grün",
     "Beige", "Gelb", "Orange", "Violett", "Gold", "Bronze",
 )
@@ -249,7 +249,7 @@ class FilterOptionsTest {
 }
 ```
 
-(`germanCarBrands` and `germanCarColors` are `private val`s at file scope in `PhotoCaptureScreen.kt` within the same package — visible to this test file without an import, exactly as `filterCarBrands`'s existing test already relied on for `germanCarBrands`.)
+(`germanCarBrands` and `germanCarColors` must be `internal val`s, not `private val`s, at file scope in `PhotoCaptureScreen.kt`: Kotlin top-level `private` is file-private, not package-private, so a `private val` would not be visible to this test file even though it's in the same package. `internal` makes them visible module-wide, including from this test.)
 
 - [ ] **Step 7: Compile the module**
 
