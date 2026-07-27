@@ -31,9 +31,12 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -75,6 +78,16 @@ import kotlinx.coroutines.launch
 // index must be part of the key — using uri.toString() alone crashes LazyRow with a
 // duplicate-key error.
 internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
+
+private val germanCarBrands = listOf(
+    "Volkswagen", "Mercedes-Benz", "BMW", "Audi", "Opel", "Škoda", "Ford",
+    "Seat", "Renault", "Hyundai", "Kia", "Toyota", "Peugeot", "Fiat",
+    "Volvo", "Mini", "Citroën", "Dacia", "Nissan", "Mazda", "Porsche",
+    "Smart", "Honda", "Suzuki", "Tesla",
+)
+
+internal fun filterCarBrands(query: String): List<String> =
+    germanCarBrands.filter { it.contains(query, ignoreCase = true) }
 
 @Composable
 internal fun PhotoCaptureRoot(
@@ -340,10 +353,9 @@ internal fun PhotoCaptureScreen(
                 label = "Kennzeichen",
             )
 
-            RequiredTextField(
+            RequiredBrandDropdownField(
                 value = makeText,
                 onValueChange = onMakeTextChanged,
-                label = "Marke",
             )
 
             RequiredTextField(
@@ -559,6 +571,76 @@ private fun RequiredTextField(
                 }
             },
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RequiredBrandDropdownField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var wasFocused by remember { mutableStateOf(false) }
+    var touched by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+    val isError = touched && value.isBlank()
+    val filteredBrands = remember(value) {
+        filterCarBrands(value)
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded && filteredBrands.isNotEmpty(),
+        onExpandedChange = { expanded = it },
+        modifier = modifier,
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+                expanded = true
+            },
+            label = { Text(text = "Marke *") },
+            isError = isError,
+            supportingText = if (isError) {
+                { Text(text = "Pflichtfeld") }
+            } else {
+                null
+            },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(
+                    expanded = expanded,
+                    modifier = Modifier.menuAnchor(MenuAnchorType.SecondaryEditable),
+                )
+            },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryEditable)
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        wasFocused = true
+                        expanded = true
+                    } else if (wasFocused) {
+                        touched = true
+                        expanded = false
+                    }
+                },
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded && filteredBrands.isNotEmpty(),
+            onDismissRequest = { expanded = false },
+        ) {
+            filteredBrands.forEach { brand ->
+                DropdownMenuItem(
+                    text = { Text(text = brand) },
+                    onClick = {
+                        onValueChange(brand)
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
 }
 
 @Composable
