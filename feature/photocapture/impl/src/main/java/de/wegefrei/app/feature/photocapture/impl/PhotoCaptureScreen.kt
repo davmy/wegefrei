@@ -79,14 +79,14 @@ import kotlinx.coroutines.launch
 // duplicate-key error.
 internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
 
-private val germanCarBrands = listOf(
+internal val germanCarBrands = listOf(
     "Volkswagen", "Mercedes-Benz", "BMW", "Audi", "Opel", "Škoda", "Ford",
     "Seat", "Renault", "Hyundai", "Kia", "Toyota", "Peugeot", "Fiat",
     "Volvo", "Mini", "Citroën", "Dacia", "Nissan", "Mazda", "Porsche",
     "Smart", "Honda", "Suzuki", "Tesla",
 )
 
-private val germanCarColors = listOf(
+internal val germanCarColors = listOf(
     "Schwarz", "Weiß", "Silber", "Grau", "Blau", "Rot", "Braun", "Grün",
     "Beige", "Gelb", "Orange", "Violett", "Gold", "Bronze",
 )
