@@ -5,12 +5,12 @@
     android:viewportHeight="108">
     <!-- Minimalist "Absolutes Halteverbot" (no-stopping) sign: a hollow white ring — the
          center is transparent so the dark green background shows through — with a white
-         diagonal bar that overlaps the ring fully on both ends. -->
+         diagonal bar that connects to the ring on both ends without extending past it. -->
     <path
         android:fillColor="#FFFFFF"
         android:fillType="evenOdd"
         android:pathData="M28,54 A26,26 0 1,0 80,54 A26,26 0 1,0 28,54 Z M34,54 A20,20 0 1,0 74,54 A20,20 0 1,0 34,54 Z" />
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M71.67,78.75 L78.75,71.67 L36.33,29.25 L29.25,36.33 Z" />
+        android:pathData="M68.84,75.92 L75.92,68.84 L39.16,32.08 L32.08,39.16 Z" />
 </vector>
