@@ -25,7 +25,9 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun WegefreiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    // Disabled by default so the app's green branding is consistent across devices,
+    // instead of being overridden by the wallpaper-derived Material You palette.
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
