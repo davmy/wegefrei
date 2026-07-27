@@ -53,15 +53,15 @@ class WitnessDetailsViewModelTest {
     }
 
     @Test
-    fun `ordnungsamtEmail defaults to blank`() {
-        assertEquals("", viewModel.ordnungsamtEmail.value)
+    fun `authorityEmail defaults to blank`() {
+        assertEquals("", viewModel.authorityEmail.value)
     }
 
     @Test
-    fun `onOrdnungsamtEmailChanged updates the state without persisting it`() {
-        viewModel.onOrdnungsamtEmailChanged("ordnungsamt@example.com")
+    fun `onAuthorityEmailChanged updates the state without persisting it`() {
+        viewModel.onAuthorityEmailChanged("ordnungsamt@example.com")
 
-        assertEquals("ordnungsamt@example.com", viewModel.ordnungsamtEmail.value)
+        assertEquals("ordnungsamt@example.com", viewModel.authorityEmail.value)
         assertEquals(null, repository.savedName)
         assertEquals(null, repository.savedAddress)
         assertEquals(null, repository.savedEmail)

@@ -50,7 +50,7 @@ internal fun WitnessDetailsRoot(
     val name by viewModel.name.collectAsState()
     val address by viewModel.address.collectAsState()
     val email by viewModel.email.collectAsState()
-    val ordnungsamtEmail by viewModel.ordnungsamtEmail.collectAsState()
+    val authorityEmail by viewModel.authorityEmail.collectAsState()
 
     WitnessDetailsScreen(
         name = name,
@@ -59,8 +59,8 @@ internal fun WitnessDetailsRoot(
         onAddressChanged = viewModel::onAddressChanged,
         email = email,
         onEmailChanged = viewModel::onEmailChanged,
-        ordnungsamtEmail = ordnungsamtEmail,
-        onOrdnungsamtEmailChanged = viewModel::onOrdnungsamtEmailChanged,
+        authorityEmail = authorityEmail,
+        onAuthorityEmailChanged = viewModel::onAuthorityEmailChanged,
         onBackRequested = onBackRequested,
     )
 }
@@ -74,8 +74,8 @@ internal fun WitnessDetailsScreen(
     onAddressChanged: (String) -> Unit,
     email: String,
     onEmailChanged: (String) -> Unit,
-    ordnungsamtEmail: String,
-    onOrdnungsamtEmailChanged: (String) -> Unit,
+    authorityEmail: String,
+    onAuthorityEmailChanged: (String) -> Unit,
     onBackRequested: () -> Unit,
 ) {
     Scaffold(
@@ -130,8 +130,8 @@ internal fun WitnessDetailsScreen(
             HorizontalDivider()
 
             WitnessTextField(
-                value = ordnungsamtEmail,
-                onValueChange = onOrdnungsamtEmailChanged,
+                value = authorityEmail,
+                onValueChange = onAuthorityEmailChanged,
                 label = "E-Mail Ordnungsamt",
                 required = false,
                 validate = { value -> if (value.isNotBlank() && !isValidEmail(value)) "Ungültige E-Mail-Adresse" else null },
