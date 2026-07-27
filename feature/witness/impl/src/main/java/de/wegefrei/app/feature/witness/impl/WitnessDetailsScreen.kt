@@ -23,17 +23,15 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import de.wegefrei.app.core.designsystem.rememberTouchedFieldState
 
 @Composable
 internal fun WitnessDetailsRoot(
@@ -160,9 +158,8 @@ private fun WitnessTextField(
     required: Boolean = true,
     validate: @Composable (String) -> String? = { if (it.isBlank()) stringResource(R.string.error_required_field) else null },
 ) {
-    var wasFocused by remember { mutableStateOf(false) }
-    var touched by remember { mutableStateOf(false) }
-    val errorMessage = if (touched) validate(value) else null
+    val touchedField = rememberTouchedFieldState()
+    val errorMessage = if (touchedField.touched) validate(value) else null
 
     OutlinedTextField(
         value = value,
@@ -172,12 +169,6 @@ private fun WitnessTextField(
         supportingText = errorMessage?.let { message -> { Text(text = message) } },
         modifier = modifier
             .fillMaxWidth()
-            .onFocusChanged { focusState ->
-                if (focusState.isFocused) {
-                    wasFocused = true
-                } else if (wasFocused) {
-                    touched = true
-                }
-            },
+            .then(touchedField.modifier),
     )
 }

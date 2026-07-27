@@ -19,8 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
+import de.wegefrei.app.core.designsystem.rememberTouchedFieldState
 
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
@@ -40,9 +40,8 @@ internal fun RequiredTextField(
     label: String,
     modifier: Modifier = Modifier,
 ) {
-    var wasFocused by remember { mutableStateOf(false) }
-    var touched by remember { mutableStateOf(false) }
-    val isError = touched && value.isBlank()
+    val touchedField = rememberTouchedFieldState()
+    val isError = touchedField.touched && value.isBlank()
 
     OutlinedTextField(
         value = value,
@@ -56,13 +55,7 @@ internal fun RequiredTextField(
         },
         modifier = modifier
             .fillMaxWidth()
-            .onFocusChanged { focusState ->
-                if (focusState.isFocused) {
-                    wasFocused = true
-                } else if (wasFocused) {
-                    touched = true
-                }
-            },
+            .then(touchedField.modifier),
     )
 }
 
@@ -98,10 +91,9 @@ internal fun RequiredOptionDropdownField(
     displayOptions: List<String> = options,
     modifier: Modifier = Modifier,
 ) {
-    var wasFocused by remember { mutableStateOf(false) }
-    var touched by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
-    val isError = touched && value.isBlank()
+    val touchedField = rememberTouchedFieldState(onFocusChanged = { isFocused -> expanded = isFocused })
+    val isError = touchedField.touched && value.isBlank()
     val filteredIndices = remember(value, options, displayOptions) {
         filterOptionIndices(value, options, displayOptions)
     }
@@ -140,15 +132,7 @@ internal fun RequiredOptionDropdownField(
             modifier = Modifier
                 .menuAnchor(MenuAnchorType.PrimaryEditable)
                 .fillMaxWidth()
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        wasFocused = true
-                        expanded = true
-                    } else if (wasFocused) {
-                        touched = true
-                        expanded = false
-                    }
-                },
+                .then(touchedField.modifier),
         )
 
         ExposedDropdownMenu(

@@ -36,6 +36,7 @@ kotlin {
 
 dependencies {
     implementation(project(":feature:photocapture:api"))
+    implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
