@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -39,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -436,10 +438,12 @@ internal fun PhotoCaptureScreen(
                 options = germanTrafficViolations,
             )
 
-            RequiredTextField(
+            RequiredSwitchField(
                 value = obstructionText,
                 onValueChange = onObstructionTextChanged,
                 label = "Behinderung",
+                onLabel = "Ja",
+                offLabel = "Nein",
             )
 
             Button(
@@ -593,6 +597,28 @@ private fun RequiredTextField(
                 }
             },
     )
+}
+
+@Composable
+private fun RequiredSwitchField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    onLabel: String,
+    offLabel: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+        Switch(
+            checked = value == onLabel,
+            onCheckedChange = { checked -> onValueChange(if (checked) onLabel else offLabel) },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
