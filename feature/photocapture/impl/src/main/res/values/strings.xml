@@ -45,4 +45,20 @@
         <item>%1$s in verkehrsberuhigten Bereich (Zeichen 325.1)</item>
         <item>%1$s in eingeschränktem Halteverbot (Zeichen 286)</item>
     </string-array>
+    <string-array name="color_names">
+        <item>Schwarz</item>
+        <item>Weiß</item>
+        <item>Silber</item>
+        <item>Grau</item>
+        <item>Blau</item>
+        <item>Rot</item>
+        <item>Braun</item>
+        <item>Grün</item>
+        <item>Beige</item>
+        <item>Gelb</item>
+        <item>Orange</item>
+        <item>Violett</item>
+        <item>Gold</item>
+        <item>Bronze</item>
+    </string-array>
 </resources>

@@ -408,6 +408,7 @@ internal fun PhotoCaptureScreen(
                 onValueChange = onColorTextChanged,
                 label = stringResource(R.string.label_color),
                 options = germanCarColors,
+                displayOptions = stringArrayResource(R.array.color_names).toList(),
             )
 
             Text(

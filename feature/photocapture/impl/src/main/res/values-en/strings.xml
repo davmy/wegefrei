@@ -45,4 +45,20 @@
         <item>%1$s in a traffic-calmed zone (sign 325.1)</item>
         <item>%1$s in a restricted no-stopping zone (sign 286)</item>
     </string-array>
+    <string-array name="color_names">
+        <item>Black</item>
+        <item>White</item>
+        <item>Silver</item>
+        <item>Gray</item>
+        <item>Blue</item>
+        <item>Red</item>
+        <item>Brown</item>
+        <item>Green</item>
+        <item>Beige</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Purple</item>
+        <item>Gold</item>
+        <item>Bronze</item>
+    </string-array>
 </resources>
