@@ -10,7 +10,7 @@ data class ReportDetails(
     val address: String,
     val incidentDateTime: LocalDateTime,
     val violation: String,
-    val obstruction: String,
-    val durationOver60Minutes: String,
+    val obstruction: String?,
+    val durationOver60Minutes: String?,
     val photoUris: List<Uri>,
 )

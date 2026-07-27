@@ -54,7 +54,7 @@ class EmailReportComposerTest {
     }
 
     @Test
-    fun `buildReportEmailBody omits the duration line when durationOver60Minutes is blank`() {
+    fun `buildReportEmailBody omits the duration line when durationOver60Minutes is null`() {
         val witness = WitnessDetails(
             name = "Max Mustermann",
             address = "Musterstraße 1, 12345 Musterstadt",
@@ -68,7 +68,7 @@ class EmailReportComposerTest {
             incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
             violation = "Halten im absoluten Halteverbot",
             obstruction = "Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen",
-            durationOver60Minutes = "",
+            durationOver60Minutes = null,
             photoUris = emptyList(),
         )
 
@@ -97,7 +97,7 @@ class EmailReportComposerTest {
     }
 
     @Test
-    fun `buildReportEmailBody omits the obstruction line when obstruction is blank`() {
+    fun `buildReportEmailBody omits the obstruction line when obstruction is null`() {
         val witness = WitnessDetails(
             name = "Max Mustermann",
             address = "Musterstraße 1, 12345 Musterstadt",
@@ -110,7 +110,7 @@ class EmailReportComposerTest {
             address = "Musterplatz 5, 12345 Musterstadt",
             incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
             violation = "Parken im absoluten Halteverbot",
-            obstruction = "",
+            obstruction = null,
             durationOver60Minutes = "Nein",
             photoUris = emptyList(),
         )

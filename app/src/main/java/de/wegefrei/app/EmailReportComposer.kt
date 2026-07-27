@@ -14,12 +14,12 @@ fun buildReportEmailSubject(): String = "Anzeige einer Verkehrsordnungswidrigkei
 
 fun buildReportEmailBody(witness: WitnessDetails, report: ReportDetails): String {
     val incidentDateTime = report.incidentDateTime.format(REPORT_DATE_TIME_FORMATTER)
-    val obstructionLine = if (report.obstruction.isNotBlank()) {
+    val obstructionLine = if (report.obstruction != null) {
         "\n            Angaben zu einer konkreten Verkehrsbehinderung oder -gefährdung: ${report.obstruction}"
     } else {
         ""
     }
-    val durationLine = if (report.durationOver60Minutes.isNotBlank()) {
+    val durationLine = if (report.durationOver60Minutes != null) {
         "\n            Standzeit länger als 60 Minuten: ${report.durationOver60Minutes}"
     } else {
         ""
