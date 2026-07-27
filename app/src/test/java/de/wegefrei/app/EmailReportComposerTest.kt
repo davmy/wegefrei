@@ -38,7 +38,7 @@ class EmailReportComposerTest {
                 Anzeigender = Zeuge: Max Mustermann, Musterstraße 1, 12345 Musterstadt, E-Mail-Adresse: max@example.com
                 Weitere Zeugen: -
                 Tatörtlichkeit: Musterplatz 5, 12345 Musterstadt
-                Tatzeit(en)/Zeit der Feststellung: 06.10.2011 11:27
+                Tatzeit / Zeit der Feststellung: 06.10.2011 11:27
                 Angaben zum Fahrzeug, das falsch gestanden hat: KS-T 2394, Ford, Silber
                 Angaben zum Verkehrsverstoß: Parken im absoluten Halteverbot und Radfahrstreifen, mehr als drei Minuten, kein Fahrzeughalter in der Nähe
                 Angaben zu einer konkreten Verkehrsbehinderung oder -gefährdung: Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen
@@ -82,7 +82,7 @@ class EmailReportComposerTest {
                 Anzeigender = Zeuge: Max Mustermann, Musterstraße 1, 12345 Musterstadt, E-Mail-Adresse: max@example.com
                 Weitere Zeugen: -
                 Tatörtlichkeit: Musterplatz 5, 12345 Musterstadt
-                Tatzeit(en)/Zeit der Feststellung: 06.10.2011 11:27
+                Tatzeit / Zeit der Feststellung: 06.10.2011 11:27
                 Angaben zum Fahrzeug, das falsch gestanden hat: KS-T 2394, Ford, Silber
                 Angaben zum Verkehrsverstoß: Halten im absoluten Halteverbot
                 Angaben zu einer konkreten Verkehrsbehinderung oder -gefährdung: Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen
@@ -125,7 +125,7 @@ class EmailReportComposerTest {
                 Anzeigender = Zeuge: Max Mustermann, Musterstraße 1, 12345 Musterstadt, E-Mail-Adresse: max@example.com
                 Weitere Zeugen: -
                 Tatörtlichkeit: Musterplatz 5, 12345 Musterstadt
-                Tatzeit(en)/Zeit der Feststellung: 06.10.2011 11:27
+                Tatzeit / Zeit der Feststellung: 06.10.2011 11:27
                 Angaben zum Fahrzeug, das falsch gestanden hat: KS-T 2394, Ford, Silber
                 Angaben zum Verkehrsverstoß: Parken im absoluten Halteverbot
                 Standzeit länger als 60 Minuten: Nein

@@ -32,7 +32,7 @@ fun buildReportEmailBody(witness: WitnessDetails, report: ReportDetails): String
             Anzeigender = Zeuge: ${witness.name}, ${witness.address}, E-Mail-Adresse: ${witness.email}
             Weitere Zeugen: -
             Tatörtlichkeit: ${report.address}
-            Tatzeit(en)/Zeit der Feststellung: $incidentDateTime
+            Tatzeit / Zeit der Feststellung: $incidentDateTime
             Angaben zum Fahrzeug, das falsch gestanden hat: ${report.licensePlate}, ${report.make}, ${report.color}
             Angaben zum Verkehrsverstoß: ${report.violation}$obstructionLine$durationLine
 
