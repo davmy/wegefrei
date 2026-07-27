@@ -34,13 +34,9 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -61,7 +57,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -109,9 +104,6 @@ internal val germanTrafficViolations = listOf(
     "Parken in verkehrsberuhigten Bereich (Zeichen 325.1)",
     "Parken in eingeschränktem Halteverbot (Zeichen 286)",
 )
-
-internal fun filterOptions(query: String, options: List<String>): List<String> =
-    options.filter { it.contains(query, ignoreCase = true) }
 
 internal fun trafficViolationOptions(parkOrHalt: String): List<String> =
     germanTrafficViolations.map { it.replaceFirst("Parken", parkOrHalt) }
@@ -644,133 +636,6 @@ private fun IncidentDateTimePicker(
                 TimePicker(state = timePickerState)
             },
         )
-    }
-}
-
-@Composable
-private fun RequiredTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    modifier: Modifier = Modifier,
-) {
-    var wasFocused by remember { mutableStateOf(false) }
-    var touched by remember { mutableStateOf(false) }
-    val isError = touched && value.isBlank()
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(text = "$label *") },
-        isError = isError,
-        supportingText = if (isError) {
-            { Text(text = "Pflichtfeld") }
-        } else {
-            null
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .onFocusChanged { focusState ->
-                if (focusState.isFocused) {
-                    wasFocused = true
-                } else if (wasFocused) {
-                    touched = true
-                }
-            },
-    )
-}
-
-@Composable
-private fun RequiredSwitchField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    onLabel: String,
-    offLabel: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyLarge)
-        Switch(
-            checked = value == onLabel,
-            onCheckedChange = { checked -> onValueChange(if (checked) onLabel else offLabel) },
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun RequiredOptionDropdownField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    options: List<String>,
-    modifier: Modifier = Modifier,
-) {
-    var wasFocused by remember { mutableStateOf(false) }
-    var touched by remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(false) }
-    val isError = touched && value.isBlank()
-    val filteredOptions = remember(value, options) {
-        filterOptions(value, options)
-    }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded && filteredOptions.isNotEmpty(),
-        onExpandedChange = { expanded = it },
-        modifier = modifier,
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = {
-                onValueChange(it)
-                expanded = true
-            },
-            label = { Text(text = "$label *") },
-            isError = isError,
-            supportingText = if (isError) {
-                { Text(text = "Pflichtfeld") }
-            } else {
-                null
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded,
-                    modifier = Modifier.menuAnchor(MenuAnchorType.SecondaryEditable),
-                )
-            },
-            modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryEditable)
-                .fillMaxWidth()
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        wasFocused = true
-                        expanded = true
-                    } else if (wasFocused) {
-                        touched = true
-                        expanded = false
-                    }
-                },
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded && filteredOptions.isNotEmpty(),
-            onDismissRequest = { expanded = false },
-        ) {
-            filteredOptions.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(text = option) },
-                    onClick = {
-                        onValueChange(option)
-                        expanded = false
-                    },
-                )
-            }
-        }
     }
 }
 
