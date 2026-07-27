@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -110,6 +112,9 @@ internal val germanTrafficViolations = listOf(
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
 
+internal fun trafficViolationOptions(parkOrHalt: String): List<String> =
+    germanTrafficViolations.map { it.replaceFirst("Parken", parkOrHalt) }
+
 @Composable
 internal fun PhotoCaptureRoot(
     viewModel: PhotoCaptureViewModel = viewModel(),
@@ -122,6 +127,7 @@ internal fun PhotoCaptureRoot(
     val licensePlateText by viewModel.licensePlateText.collectAsState()
     val makeText by viewModel.makeText.collectAsState()
     val colorText by viewModel.colorText.collectAsState()
+    val parkOrHaltText by viewModel.parkOrHaltText.collectAsState()
     val violationText by viewModel.violationText.collectAsState()
     val obstructionText by viewModel.obstructionText.collectAsState()
     val durationOver60MinutesText by viewModel.durationOver60MinutesText.collectAsState()
@@ -192,6 +198,8 @@ internal fun PhotoCaptureRoot(
             onMakeTextChanged = viewModel::onMakeTextChanged,
             colorText = colorText,
             onColorTextChanged = viewModel::onColorTextChanged,
+            parkOrHaltText = parkOrHaltText,
+            onParkOrHaltTextChanged = viewModel::onParkOrHaltTextChanged,
             violationText = violationText,
             onViolationTextChanged = viewModel::onViolationTextChanged,
             obstructionText = obstructionText,
@@ -258,6 +266,8 @@ internal fun PhotoCaptureScreen(
     onMakeTextChanged: (String) -> Unit,
     colorText: String,
     onColorTextChanged: (String) -> Unit,
+    parkOrHaltText: String,
+    onParkOrHaltTextChanged: (String) -> Unit,
     violationText: String,
     onViolationTextChanged: (String) -> Unit,
     obstructionText: String,
@@ -288,6 +298,7 @@ internal fun PhotoCaptureScreen(
     )
 
     var showMenu by remember { mutableStateOf(false) }
+    var showParkOrHaltInfo by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -436,11 +447,43 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = parkOrHaltText, style = MaterialTheme.typography.bodyLarge)
+                IconButton(onClick = { showParkOrHaltInfo = true }) {
+                    Icon(imageVector = Icons.Default.Info, contentDescription = "Erklärung zu Parken/Halten")
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    checked = parkOrHaltText == "Parken",
+                    onCheckedChange = { checked -> onParkOrHaltTextChanged(if (checked) "Parken" else "Halten") },
+                )
+            }
+
+            if (showParkOrHaltInfo) {
+                AlertDialog(
+                    onDismissRequest = { showParkOrHaltInfo = false },
+                    confirmButton = {
+                        TextButton(onClick = { showParkOrHaltInfo = false }) {
+                            Text(text = "OK")
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = "Parken liegt vor, wenn das Fahrzeug länger als 3 Minuten " +
+                                "steht oder der Fahrer es verlässt.",
+                        )
+                    },
+                )
+            }
+
             RequiredOptionDropdownField(
                 value = violationText,
                 onValueChange = onViolationTextChanged,
                 label = "Verstoß",
-                options = germanTrafficViolations,
+                options = trafficViolationOptions(parkOrHaltText),
             )
 
             RequiredSwitchField(
@@ -451,13 +494,15 @@ internal fun PhotoCaptureScreen(
                 offLabel = "Nein",
             )
 
-            RequiredSwitchField(
-                value = durationOver60MinutesText,
-                onValueChange = onDurationOver60MinutesTextChanged,
-                label = "Mehr als 60 Minuten",
-                onLabel = "Ja",
-                offLabel = "Nein",
-            )
+            if (parkOrHaltText == "Parken") {
+                RequiredSwitchField(
+                    value = durationOver60MinutesText,
+                    onValueChange = onDurationOver60MinutesTextChanged,
+                    label = "Mehr als 60 Minuten",
+                    onLabel = "Ja",
+                    offLabel = "Nein",
+                )
+            }
 
             Button(
                 onClick = {
@@ -470,7 +515,7 @@ internal fun PhotoCaptureScreen(
                             incidentDateTime = incidentDateTime,
                             violation = violationText,
                             obstruction = obstructionText,
-                            durationOver60Minutes = durationOver60MinutesText,
+                            durationOver60Minutes = if (parkOrHaltText == "Parken") durationOver60MinutesText else "",
                             photoUris = photoUris,
                         ),
                     )
