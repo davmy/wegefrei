@@ -515,7 +515,7 @@ internal fun PhotoCaptureScreen(
                             incidentDateTime = incidentDateTime,
                             violation = violationText,
                             obstruction = obstructionText,
-                            durationOver60Minutes = durationOver60MinutesText,
+                            durationOver60Minutes = if (parkOrHaltText == "Parken") durationOver60MinutesText else "",
                             photoUris = photoUris,
                         ),
                     )
