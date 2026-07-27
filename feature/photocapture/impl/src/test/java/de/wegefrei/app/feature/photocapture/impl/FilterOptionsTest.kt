@@ -56,4 +56,25 @@ class FilterOptionsTest {
 
         assertEquals(listOf("Blau"), result)
     }
+
+    @Test
+    fun `blank query returns all violations`() {
+        val result = filterOptions("", germanTrafficViolations)
+
+        assertEquals(11, result.size)
+    }
+
+    @Test
+    fun `violation substring match is case-insensitive`() {
+        val result = filterOptions("radweg", germanTrafficViolations)
+
+        assertEquals(
+            listOf(
+                "Parken auf Radweg (Zeichen 237)",
+                "Parken auf Geh- und Radweg (Zeichen 240/241)",
+                "Parken auf unbeschildertem Radweg",
+            ),
+            result,
+        )
+    }
 }
