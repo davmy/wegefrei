@@ -30,4 +30,19 @@
     <string name="cd_photo_preview">Photo preview</string>
     <string name="label_required_suffix">%1$s *</string>
     <string name="error_required_field">Required field</string>
+    <string name="word_parking">Parking</string>
+    <string name="word_halting">Stopping</string>
+    <string-array name="violation_templates">
+        <item>%1$s on the sidewalk</item>
+        <item>%1$s in an absolute no-stopping zone</item>
+        <item>%1$s less than 5 meters from an intersection</item>
+        <item>%1$s less than 5 meters from a junction</item>
+        <item>%1$s on a bike lane (sign 237)</item>
+        <item>%1$s on a marked bike lane</item>
+        <item>%1$s on a shared pedestrian/bike path (sign 240 / 241)</item>
+        <item>%1$s on a no-stopping surface marking</item>
+        <item>%1$s on an unsigned bike lane</item>
+        <item>%1$s in a traffic-calmed zone (sign 325.1)</item>
+        <item>%1$s in a restricted no-stopping zone (sign 286)</item>
+    </string-array>
 </resources>

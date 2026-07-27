@@ -30,4 +30,19 @@
     <string name="cd_photo_preview">Fotovorschau</string>
     <string name="label_required_suffix">%1$s *</string>
     <string name="error_required_field">Pflichtfeld</string>
+    <string name="word_parking">Parken</string>
+    <string name="word_halting">Halten</string>
+    <string-array name="violation_templates">
+        <item>%1$s auf Gehweg</item>
+        <item>%1$s im absoluten Halteverbot</item>
+        <item>%1$s weniger als 5 Meter von Kreuzung</item>
+        <item>%1$s weniger als 5 Meter von Einmündung</item>
+        <item>%1$s auf Radweg (Zeichen 237)</item>
+        <item>%1$s auf Radfahrstreifen</item>
+        <item>%1$s auf Geh- und Radweg (Zeichen 240 / 241)</item>
+        <item>%1$s auf Sperrfläche</item>
+        <item>%1$s auf unbeschildertem Radweg</item>
+        <item>%1$s in verkehrsberuhigten Bereich (Zeichen 325.1)</item>
+        <item>%1$s in eingeschränktem Halteverbot (Zeichen 286)</item>
+    </string-array>
 </resources>

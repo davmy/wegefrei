@@ -60,6 +60,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -452,11 +453,18 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
+            // The underlying state/committed value always stays "Parken"/"Halten" — that's
+            // the exact legal-German text that ends up in the report email regardless of the
+            // app's display locale. Only the on-screen word is translated.
+            val parkOrHaltDisplayWord = stringResource(
+                if (parkOrHaltText == "Parken") R.string.word_parking else R.string.word_halting,
+            )
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = parkOrHaltText, style = MaterialTheme.typography.bodyLarge)
+                Text(text = parkOrHaltDisplayWord, style = MaterialTheme.typography.bodyLarge)
                 IconButton(onClick = { showParkOrHaltInfo = true }) {
                     Icon(imageVector = Icons.Default.Info, contentDescription = stringResource(R.string.cd_park_or_halt_info))
                 }
@@ -481,11 +489,19 @@ internal fun PhotoCaptureScreen(
                 )
             }
 
+            // Same principle as above: committed options stay the canonical German text (used
+            // for the report email); only the dropdown's suggestion labels are translated, and
+            // matching considers both so users can search using either language.
+            val violationTemplates = stringArrayResource(R.array.violation_templates)
+            val violationOptions = trafficViolationOptions(parkOrHaltText)
+            val violationDisplayOptions = violationTemplates.map { template -> template.format(parkOrHaltDisplayWord) }
+
             RequiredOptionDropdownField(
                 value = violationText,
                 onValueChange = onViolationTextChanged,
                 label = stringResource(R.string.label_violation),
-                options = trafficViolationOptions(parkOrHaltText),
+                options = violationOptions,
+                displayOptions = violationDisplayOptions,
             )
 
             RequiredSwitchField(

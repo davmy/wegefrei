@@ -25,6 +25,14 @@ import androidx.compose.ui.res.stringResource
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
 
+// Matches the query against either the committed value or its (possibly translated) display
+// text, so users can find an option by typing in either language — returns indices so the
+// caller can commit `options[index]` while rendering `displayOptions[index]`.
+internal fun filterOptionIndices(query: String, options: List<String>, displayOptions: List<String>): List<Int> =
+    options.indices.filter { index ->
+        options[index].contains(query, ignoreCase = true) || displayOptions[index].contains(query, ignoreCase = true)
+    }
+
 @Composable
 internal fun RequiredTextField(
     value: String,
@@ -87,18 +95,19 @@ internal fun RequiredOptionDropdownField(
     onValueChange: (String) -> Unit,
     label: String,
     options: List<String>,
+    displayOptions: List<String> = options,
     modifier: Modifier = Modifier,
 ) {
     var wasFocused by remember { mutableStateOf(false) }
     var touched by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     val isError = touched && value.isBlank()
-    val filteredOptions = remember(value, options) {
-        filterOptions(value, options)
+    val filteredIndices = remember(value, options, displayOptions) {
+        filterOptionIndices(value, options, displayOptions)
     }
 
     ExposedDropdownMenuBox(
-        expanded = expanded && filteredOptions.isNotEmpty(),
+        expanded = expanded && filteredIndices.isNotEmpty(),
         onExpandedChange = { expanded = it },
         modifier = modifier,
     ) {
@@ -136,14 +145,14 @@ internal fun RequiredOptionDropdownField(
         )
 
         ExposedDropdownMenu(
-            expanded = expanded && filteredOptions.isNotEmpty(),
+            expanded = expanded && filteredIndices.isNotEmpty(),
             onDismissRequest = { expanded = false },
         ) {
-            filteredOptions.forEach { option ->
+            filteredIndices.forEach { index ->
                 DropdownMenuItem(
-                    text = { Text(text = option) },
+                    text = { Text(text = displayOptions[index]) },
                     onClick = {
-                        onValueChange(option)
+                        onValueChange(options[index])
                         expanded = false
                     },
                 )
