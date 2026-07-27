@@ -106,4 +106,35 @@ class FilterOptionsTest {
             result,
         )
     }
+
+    @Test
+    fun `filterOptionIndices matches against the committed option`() {
+        val result = filterOptionIndices(
+            query = "Vol",
+            options = germanCarBrands,
+            displayOptions = germanCarBrands,
+        )
+
+        assertEquals(listOf(germanCarBrands.indexOf("Volkswagen"), germanCarBrands.indexOf("Volvo")), result)
+    }
+
+    @Test
+    fun `filterOptionIndices matches against the display option when it differs from the committed value`() {
+        val options = listOf("Parken auf Gehweg", "Parken auf Radweg (Zeichen 237)")
+        val displayOptions = listOf("Parking on the sidewalk", "Parking on a bike lane (sign 237)")
+
+        val result = filterOptionIndices(query = "sidewalk", options = options, displayOptions = displayOptions)
+
+        assertEquals(listOf(0), result)
+    }
+
+    @Test
+    fun `filterOptionIndices returns no matches when the query matches neither option nor display text`() {
+        val options = listOf("Parken auf Gehweg")
+        val displayOptions = listOf("Parking on the sidewalk")
+
+        val result = filterOptionIndices(query = "zzz", options = options, displayOptions = displayOptions)
+
+        assertEquals(emptyList<Int>(), result)
+    }
 }

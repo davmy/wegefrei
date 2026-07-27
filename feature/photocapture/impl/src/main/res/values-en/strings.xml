@@ -1,0 +1,64 @@
+<resources>
+    <string name="title_photo_capture_screen">Report illegally parked vehicle</string>
+    <string name="cd_menu">Menu</string>
+    <string name="menu_item_my_details">My details</string>
+    <string name="section_title_photos">Evidence photos</string>
+    <string name="label_photo_count">%1$d / %2$d photos</string>
+    <string name="button_choose_from_gallery">Choose from gallery</string>
+    <string name="button_take_photo">Take photo</string>
+    <string name="section_title_vehicle">Vehicle</string>
+    <string name="label_license_plate">License plate</string>
+    <string name="label_make">Make</string>
+    <string name="label_color">Color</string>
+    <string name="section_title_incident_time">Time of incident</string>
+    <string name="section_title_location">Location</string>
+    <string name="label_location">Location</string>
+    <string name="info_address_lookup_disclaimer">The location is sent to OpenStreetMap (Nominatim) for the address lookup.</string>
+    <string name="button_use_current_location">Use current location</string>
+    <string name="section_title_violation">Violation</string>
+    <string name="cd_park_or_halt_info">Explanation of parking/stopping</string>
+    <string name="dialog_confirm_ok">OK</string>
+    <string name="dialog_text_park_explanation">Parking applies when the vehicle stands for longer than 3 minutes or the driver leaves the vehicle.</string>
+    <string name="label_violation">Violation</string>
+    <string name="label_obstruction">Obstruction</string>
+    <string name="label_obstruction_details">Obstruction details</string>
+    <string name="label_duration_over_60_minutes">More than 60 minutes</string>
+    <string name="button_next">Next</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="cd_photo_thumbnail">Photo</string>
+    <string name="label_close_symbol">×</string>
+    <string name="cd_photo_preview">Photo preview</string>
+    <string name="label_required_suffix">%1$s *</string>
+    <string name="error_required_field">Required field</string>
+    <string name="word_parking">Parking</string>
+    <string name="word_halting">Stopping</string>
+    <string-array name="violation_templates">
+        <item>%1$s on the sidewalk</item>
+        <item>%1$s in an absolute no-stopping zone</item>
+        <item>%1$s less than 5 meters from an intersection</item>
+        <item>%1$s less than 5 meters from a junction</item>
+        <item>%1$s on a bike lane (sign 237)</item>
+        <item>%1$s on a marked bike lane</item>
+        <item>%1$s on a shared pedestrian/bike path (sign 240/241)</item>
+        <item>%1$s on a no-stopping surface marking</item>
+        <item>%1$s on an unsigned bike lane</item>
+        <item>%1$s in a traffic-calmed zone (sign 325.1)</item>
+        <item>%1$s in a restricted no-stopping zone (sign 286)</item>
+    </string-array>
+    <string-array name="color_names">
+        <item>Black</item>
+        <item>White</item>
+        <item>Silver</item>
+        <item>Gray</item>
+        <item>Blue</item>
+        <item>Red</item>
+        <item>Brown</item>
+        <item>Green</item>
+        <item>Beige</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Purple</item>
+        <item>Gold</item>
+        <item>Bronze</item>
+    </string-array>
+</resources>

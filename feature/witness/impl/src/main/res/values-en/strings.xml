@@ -1,0 +1,11 @@
+<resources>
+    <string name="title_witness_details_screen">My details</string>
+    <string name="cd_back">Back</string>
+    <string name="label_name">Name</string>
+    <string name="label_address">Address</string>
+    <string name="label_email">Email</string>
+    <string name="error_required_field">Required field</string>
+    <string name="error_invalid_email">Invalid email address</string>
+    <string name="label_email_authority">Authority email</string>
+    <string name="label_required_suffix">%1$s *</string>
+</resources>

@@ -20,9 +20,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.stringResource
 
 internal fun filterOptions(query: String, options: List<String>): List<String> =
     options.filter { it.contains(query, ignoreCase = true) }
+
+// Matches the query against either the committed value or its (possibly translated) display
+// text, so users can find an option by typing in either language — returns indices so the
+// caller can commit `options[index]` while rendering `displayOptions[index]`.
+internal fun filterOptionIndices(query: String, options: List<String>, displayOptions: List<String>): List<Int> =
+    options.indices.filter { index ->
+        options[index].contains(query, ignoreCase = true) || displayOptions[index].contains(query, ignoreCase = true)
+    }
 
 @Composable
 internal fun RequiredTextField(
@@ -38,10 +47,10 @@ internal fun RequiredTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = "$label *") },
+        label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
         isError = isError,
         supportingText = if (isError) {
-            { Text(text = "Pflichtfeld") }
+            { Text(text = stringResource(R.string.error_required_field)) }
         } else {
             null
         },
@@ -86,31 +95,39 @@ internal fun RequiredOptionDropdownField(
     onValueChange: (String) -> Unit,
     label: String,
     options: List<String>,
+    displayOptions: List<String> = options,
     modifier: Modifier = Modifier,
 ) {
     var wasFocused by remember { mutableStateOf(false) }
     var touched by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     val isError = touched && value.isBlank()
-    val filteredOptions = remember(value, options) {
-        filterOptions(value, options)
+    val filteredIndices = remember(value, options, displayOptions) {
+        filterOptionIndices(value, options, displayOptions)
+    }
+    // The committed value always stays whatever was picked/typed (e.g. the canonical German
+    // text for a known option), but once it exactly matches a known option, show that option's
+    // display text instead — so selecting a suggestion doesn't visually revert to German.
+    val displayValue = remember(value, options, displayOptions) {
+        val index = options.indexOf(value)
+        if (index >= 0) displayOptions[index] else value
     }
 
     ExposedDropdownMenuBox(
-        expanded = expanded && filteredOptions.isNotEmpty(),
+        expanded = expanded && filteredIndices.isNotEmpty(),
         onExpandedChange = { expanded = it },
         modifier = modifier,
     ) {
         OutlinedTextField(
-            value = value,
+            value = displayValue,
             onValueChange = {
                 onValueChange(it)
                 expanded = true
             },
-            label = { Text(text = "$label *") },
+            label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
             isError = isError,
             supportingText = if (isError) {
-                { Text(text = "Pflichtfeld") }
+                { Text(text = stringResource(R.string.error_required_field)) }
             } else {
                 null
             },
@@ -135,14 +152,14 @@ internal fun RequiredOptionDropdownField(
         )
 
         ExposedDropdownMenu(
-            expanded = expanded && filteredOptions.isNotEmpty(),
+            expanded = expanded && filteredIndices.isNotEmpty(),
             onDismissRequest = { expanded = false },
         ) {
-            filteredOptions.forEach { option ->
+            filteredIndices.forEach { index ->
                 DropdownMenuItem(
-                    text = { Text(text = option) },
+                    text = { Text(text = displayOptions[index]) },
                     onClick = {
-                        onValueChange(option)
+                        onValueChange(options[index])
                         expanded = false
                     },
                 )

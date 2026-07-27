@@ -60,6 +60,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -301,17 +303,17 @@ internal fun PhotoCaptureScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Falschparker melden") },
+                title = { Text(text = stringResource(R.string.title_photo_capture_screen)) },
                 actions = {
                     IconButton(onClick = { showMenu = true }) {
-                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Menü")
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_menu))
                     }
                     DropdownMenu(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false },
                     ) {
                         DropdownMenuItem(
-                            text = { Text(text = "Meine Angaben") },
+                            text = { Text(text = stringResource(R.string.menu_item_my_details)) },
                             onClick = {
                                 showMenu = false
                                 onOpenWitnessDetailsRequested()
@@ -339,11 +341,11 @@ internal fun PhotoCaptureScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
-                text = "Beweisfotos",
+                text = stringResource(R.string.section_title_photos),
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            Text(text = "${photoUris.size} / $MAX_PHOTOS Fotos")
+            Text(text = stringResource(R.string.label_photo_count, photoUris.size, MAX_PHOTOS))
 
             if (photoUris.isNotEmpty()) {
                 LazyRow(
@@ -372,7 +374,7 @@ internal fun PhotoCaptureScreen(
                 enabled = canAddMore,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = "Aus Galerie wählen")
+                Text(text = stringResource(R.string.button_choose_from_gallery))
             }
 
             Button(
@@ -380,36 +382,37 @@ internal fun PhotoCaptureScreen(
                 enabled = canAddMore,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = "Foto aufnehmen")
+                Text(text = stringResource(R.string.button_take_photo))
             }
 
             Text(
-                text = "Fahrzeug",
+                text = stringResource(R.string.section_title_vehicle),
                 style = MaterialTheme.typography.titleLarge,
             )
 
             RequiredTextField(
                 value = licensePlateText,
                 onValueChange = onLicensePlateTextChanged,
-                label = "Kennzeichen",
+                label = stringResource(R.string.label_license_plate),
             )
 
             RequiredOptionDropdownField(
                 value = makeText,
                 onValueChange = onMakeTextChanged,
-                label = "Marke",
+                label = stringResource(R.string.label_make),
                 options = germanCarBrands,
             )
 
             RequiredOptionDropdownField(
                 value = colorText,
                 onValueChange = onColorTextChanged,
-                label = "Farbe",
+                label = stringResource(R.string.label_color),
                 options = germanCarColors,
+                displayOptions = stringArrayResource(R.array.color_names).toList(),
             )
 
             Text(
-                text = "Tatzeitpunkt",
+                text = stringResource(R.string.section_title_incident_time),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -419,18 +422,18 @@ internal fun PhotoCaptureScreen(
             )
 
             Text(
-                text = "Tatort",
+                text = stringResource(R.string.section_title_location),
                 style = MaterialTheme.typography.titleLarge,
             )
 
             RequiredTextField(
                 value = addressText,
                 onValueChange = onAddressTextChanged,
-                label = "Tatort",
+                label = stringResource(R.string.label_location),
             )
 
             Text(
-                text = "Für die Adresssuche wird der Standort an OpenStreetMap (Nominatim) übermittelt.",
+                text = stringResource(R.string.info_address_lookup_disclaimer),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -443,21 +446,28 @@ internal fun PhotoCaptureScreen(
                 onClick = onUseCurrentLocationRequested,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = "Aktuellen Standort verwenden")
+                Text(text = stringResource(R.string.button_use_current_location))
             }
 
             Text(
-                text = "Verstoß",
+                text = stringResource(R.string.section_title_violation),
                 style = MaterialTheme.typography.titleLarge,
+            )
+
+            // The underlying state/committed value always stays "Parken"/"Halten" — that's
+            // the exact legal-German text that ends up in the report email regardless of the
+            // app's display locale. Only the on-screen word is translated.
+            val parkOrHaltDisplayWord = stringResource(
+                if (parkOrHaltText == "Parken") R.string.word_parking else R.string.word_halting,
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = parkOrHaltText, style = MaterialTheme.typography.bodyLarge)
+                Text(text = parkOrHaltDisplayWord, style = MaterialTheme.typography.bodyLarge)
                 IconButton(onClick = { showParkOrHaltInfo = true }) {
-                    Icon(imageVector = Icons.Default.Info, contentDescription = "Erklärung zu Parken/Halten")
+                    Icon(imageVector = Icons.Default.Info, contentDescription = stringResource(R.string.cd_park_or_halt_info))
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Switch(
@@ -471,29 +481,34 @@ internal fun PhotoCaptureScreen(
                     onDismissRequest = { showParkOrHaltInfo = false },
                     confirmButton = {
                         TextButton(onClick = { showParkOrHaltInfo = false }) {
-                            Text(text = "OK")
+                            Text(text = stringResource(R.string.dialog_confirm_ok))
                         }
                     },
                     text = {
-                        Text(
-                            text = "Parken liegt vor, wenn das Fahrzeug länger als 3 Minuten " +
-                                "steht oder der Fahrer es verlässt.",
-                        )
+                        Text(text = stringResource(R.string.dialog_text_park_explanation))
                     },
                 )
             }
 
+            // Same principle as above: committed options stay the canonical German text (used
+            // for the report email); only the dropdown's suggestion labels are translated, and
+            // matching considers both so users can search using either language.
+            val violationTemplates = stringArrayResource(R.array.violation_templates)
+            val violationOptions = trafficViolationOptions(parkOrHaltText)
+            val violationDisplayOptions = violationTemplates.map { template -> template.format(parkOrHaltDisplayWord) }
+
             RequiredOptionDropdownField(
                 value = violationText,
                 onValueChange = onViolationTextChanged,
-                label = "Verstoß",
-                options = trafficViolationOptions(parkOrHaltText),
+                label = stringResource(R.string.label_violation),
+                options = violationOptions,
+                displayOptions = violationDisplayOptions,
             )
 
             RequiredSwitchField(
                 value = obstructionText,
                 onValueChange = onObstructionTextChanged,
-                label = "Behinderung",
+                label = stringResource(R.string.label_obstruction),
                 onLabel = "Ja",
                 offLabel = "Nein",
             )
@@ -502,7 +517,7 @@ internal fun PhotoCaptureScreen(
                 RequiredTextField(
                     value = obstructionDetailsText,
                     onValueChange = onObstructionDetailsTextChanged,
-                    label = "Details zur Behinderung",
+                    label = stringResource(R.string.label_obstruction_details),
                 )
             }
 
@@ -510,7 +525,7 @@ internal fun PhotoCaptureScreen(
                 RequiredSwitchField(
                     value = durationOver60MinutesText,
                     onValueChange = onDurationOver60MinutesTextChanged,
-                    label = "Mehr als 60 Minuten",
+                    label = stringResource(R.string.label_duration_over_60_minutes),
                     onLabel = "Ja",
                     offLabel = "Nein",
                 )
@@ -538,7 +553,7 @@ internal fun PhotoCaptureScreen(
                     addressText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = "Weiter")
+                Text(text = stringResource(R.string.button_next))
             }
         }
     }
@@ -593,12 +608,12 @@ private fun IncidentDateTimePicker(
                         }
                     },
                 ) {
-                    Text(text = "OK")
+                    Text(text = stringResource(R.string.dialog_confirm_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text(text = "Abbrechen")
+                    Text(text = stringResource(R.string.dialog_cancel))
                 }
             },
         ) {
@@ -624,12 +639,12 @@ private fun IncidentDateTimePicker(
                         showTimePicker = false
                     },
                 ) {
-                    Text(text = "OK")
+                    Text(text = stringResource(R.string.dialog_confirm_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showTimePicker = false }) {
-                    Text(text = "Abbrechen")
+                    Text(text = stringResource(R.string.dialog_cancel))
                 }
             },
             text = {
@@ -648,7 +663,7 @@ private fun PhotoThumbnail(
     Box(modifier = Modifier.size(96.dp)) {
         AsyncImage(
             model = uri,
-            contentDescription = "Foto",
+            contentDescription = stringResource(R.string.cd_photo_thumbnail),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
@@ -666,7 +681,7 @@ private fun PhotoThumbnail(
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "×",
+                text = stringResource(R.string.label_close_symbol),
                 color = Color.White,
                 modifier = Modifier.padding(bottom = 2.dp),
             )
@@ -691,7 +706,7 @@ private fun PhotoPreviewDialog(
         ) {
             AsyncImage(
                 model = uri,
-                contentDescription = "Fotovorschau",
+                contentDescription = stringResource(R.string.cd_photo_preview),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -706,7 +721,7 @@ private fun PhotoPreviewDialog(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "×",
+                    text = stringResource(R.string.label_close_symbol),
                     color = Color.White,
                     style = MaterialTheme.typography.headlineSmall,
                 )

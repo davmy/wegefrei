@@ -1,0 +1,64 @@
+<resources>
+    <string name="title_photo_capture_screen">Falschparker melden</string>
+    <string name="cd_menu">Menü</string>
+    <string name="menu_item_my_details">Meine Angaben</string>
+    <string name="section_title_photos">Beweisfotos</string>
+    <string name="label_photo_count">%1$d / %2$d Fotos</string>
+    <string name="button_choose_from_gallery">Aus Galerie wählen</string>
+    <string name="button_take_photo">Foto aufnehmen</string>
+    <string name="section_title_vehicle">Fahrzeug</string>
+    <string name="label_license_plate">Kennzeichen</string>
+    <string name="label_make">Marke</string>
+    <string name="label_color">Farbe</string>
+    <string name="section_title_incident_time">Tatzeitpunkt</string>
+    <string name="section_title_location">Tatort</string>
+    <string name="label_location">Tatort</string>
+    <string name="info_address_lookup_disclaimer">Für die Adresssuche wird der Standort an OpenStreetMap (Nominatim) übermittelt.</string>
+    <string name="button_use_current_location">Aktuellen Standort verwenden</string>
+    <string name="section_title_violation">Verstoß</string>
+    <string name="cd_park_or_halt_info">Erklärung zu Parken/Halten</string>
+    <string name="dialog_confirm_ok">OK</string>
+    <string name="dialog_text_park_explanation">Parken liegt vor, wenn das Fahrzeug länger als 3 Minuten steht oder der Fahrer es verlässt.</string>
+    <string name="label_violation">Verstoß</string>
+    <string name="label_obstruction">Behinderung</string>
+    <string name="label_obstruction_details">Details zur Behinderung</string>
+    <string name="label_duration_over_60_minutes">Mehr als 60 Minuten</string>
+    <string name="button_next">Weiter</string>
+    <string name="dialog_cancel">Abbrechen</string>
+    <string name="cd_photo_thumbnail">Foto</string>
+    <string name="label_close_symbol">×</string>
+    <string name="cd_photo_preview">Fotovorschau</string>
+    <string name="label_required_suffix">%1$s *</string>
+    <string name="error_required_field">Pflichtfeld</string>
+    <string name="word_parking">Parken</string>
+    <string name="word_halting">Halten</string>
+    <string-array name="violation_templates">
+        <item>%1$s auf Gehweg</item>
+        <item>%1$s im absoluten Halteverbot</item>
+        <item>%1$s weniger als 5 Meter von Kreuzung</item>
+        <item>%1$s weniger als 5 Meter von Einmündung</item>
+        <item>%1$s auf Radweg (Zeichen 237)</item>
+        <item>%1$s auf Radfahrstreifen</item>
+        <item>%1$s auf Geh- und Radweg (Zeichen 240 / 241)</item>
+        <item>%1$s auf Sperrfläche</item>
+        <item>%1$s auf unbeschildertem Radweg</item>
+        <item>%1$s in verkehrsberuhigten Bereich (Zeichen 325.1)</item>
+        <item>%1$s in eingeschränktem Halteverbot (Zeichen 286)</item>
+    </string-array>
+    <string-array name="color_names">
+        <item>Schwarz</item>
+        <item>Weiß</item>
+        <item>Silber</item>
+        <item>Grau</item>
+        <item>Blau</item>
+        <item>Rot</item>
+        <item>Braun</item>
+        <item>Grün</item>
+        <item>Beige</item>
+        <item>Gelb</item>
+        <item>Orange</item>
+        <item>Violett</item>
+        <item>Gold</item>
+        <item>Bronze</item>
+    </string-array>
+</resources>
