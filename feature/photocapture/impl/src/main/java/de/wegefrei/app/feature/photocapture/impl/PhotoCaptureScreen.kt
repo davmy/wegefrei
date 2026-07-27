@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -296,6 +297,7 @@ internal fun PhotoCaptureScreen(
     )
 
     var showMenu by remember { mutableStateOf(false) }
+    var showParkOrHaltInfo by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -444,13 +446,36 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            RequiredSwitchField(
-                value = parkOrHaltText,
-                onValueChange = onParkOrHaltTextChanged,
-                label = parkOrHaltText,
-                onLabel = "Parken",
-                offLabel = "Halten",
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RequiredSwitchField(
+                    value = parkOrHaltText,
+                    onValueChange = onParkOrHaltTextChanged,
+                    label = parkOrHaltText,
+                    onLabel = "Parken",
+                    offLabel = "Halten",
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = { showParkOrHaltInfo = true }) {
+                    Icon(imageVector = Icons.Default.Info, contentDescription = "Erklärung zu Parken/Halten")
+                }
+            }
+
+            if (showParkOrHaltInfo) {
+                AlertDialog(
+                    onDismissRequest = { showParkOrHaltInfo = false },
+                    confirmButton = {
+                        TextButton(onClick = { showParkOrHaltInfo = false }) {
+                            Text(text = "OK")
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = "Parken liegt vor, wenn das Fahrzeug länger als 3 Minuten " +
+                                "steht oder der Fahrer es verlässt.",
+                        )
+                    },
+                )
+            }
 
             RequiredOptionDropdownField(
                 value = violationText,
@@ -467,13 +492,15 @@ internal fun PhotoCaptureScreen(
                 offLabel = "Nein",
             )
 
-            RequiredSwitchField(
-                value = durationOver60MinutesText,
-                onValueChange = onDurationOver60MinutesTextChanged,
-                label = "Mehr als 60 Minuten",
-                onLabel = "Ja",
-                offLabel = "Nein",
-            )
+            if (parkOrHaltText == "Parken") {
+                RequiredSwitchField(
+                    value = durationOver60MinutesText,
+                    onValueChange = onDurationOver60MinutesTextChanged,
+                    label = "Mehr als 60 Minuten",
+                    onLabel = "Ja",
+                    offLabel = "Nein",
+                )
+            }
 
             Button(
                 onClick = {
