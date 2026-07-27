@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <!-- The witness's own name/address/email is stored in this DataStore file so it can be
+         reused across reports. Excluding it from cloud backup and device-to-device transfer
+         keeps that PII from leaving the device via those OS-level mechanisms. -->
+    <cloud-backup>
+        <exclude domain="file" path="datastore/witness_details.preferences_pb" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="datastore/witness_details.preferences_pb" />
+    </device-transfer>
+</data-extraction-rules>
