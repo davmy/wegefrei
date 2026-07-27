@@ -33,7 +33,7 @@ fun buildReportEmailBody(witness: WitnessDetails, report: ReportDetails): String
             Weitere Zeugen: -
             Tatörtlichkeit: ${report.address}
             Tatzeit(en)/Zeit der Feststellung: $incidentDateTime
-            Angaben zum Fahrzeug, das falsch gestanden hat: ${report.licensePlate}, ${report.make}, ${report.color}, PKW
+            Angaben zum Fahrzeug, das falsch gestanden hat: ${report.licensePlate}, ${report.make}, ${report.color}
             Angaben zum Verkehrsverstoß: ${report.violation}$obstructionLine$durationLine
 
         Meine oben gemachten Angaben einschließlich meiner Personalien sind zutreffend und vollständig (§111 OWiG). Mir ist bewusst, dass ich als Zeuge zur wahrheitsgemäßen Aussage (§ 57 und § 161a StPO i. V. m. § 46 OWiG) und auch zu einem möglichen Erscheinen vor Gericht verpflichtet bin. Vorsätzlich falsche Angaben zu angeblichen Ordnungswidrigkeiten können eine Straftat (§ 164 StGB) darstellen.
