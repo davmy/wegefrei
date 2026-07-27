@@ -210,4 +210,16 @@ class PhotoCaptureViewModelTest {
 
         assertEquals("Radfahrer muss auf die Fahrspur ausweichen", viewModel.obstructionText.value)
     }
+
+    @Test
+    fun `durationOver60MinutesText defaults to Nein`() {
+        assertEquals("Nein", viewModel.durationOver60MinutesText.value)
+    }
+
+    @Test
+    fun `onDurationOver60MinutesTextChanged sets the duration text`() {
+        viewModel.onDurationOver60MinutesTextChanged("Ja")
+
+        assertEquals("Ja", viewModel.durationOver60MinutesText.value)
+    }
 }

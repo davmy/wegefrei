@@ -11,5 +11,6 @@ data class ReportDetails(
     val incidentDateTime: LocalDateTime,
     val violation: String,
     val obstruction: String,
+    val durationOver60Minutes: String,
     val photoUris: List<Uri>,
 )

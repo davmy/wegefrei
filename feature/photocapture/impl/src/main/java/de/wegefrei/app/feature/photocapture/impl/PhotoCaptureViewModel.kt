@@ -32,6 +32,9 @@ internal class PhotoCaptureViewModel : ViewModel() {
     private val _obstructionText = MutableStateFlow("Nein")
     val obstructionText: StateFlow<String> = _obstructionText.asStateFlow()
 
+    private val _durationOver60MinutesText = MutableStateFlow("Nein")
+    val durationOver60MinutesText: StateFlow<String> = _durationOver60MinutesText.asStateFlow()
+
     private val _incidentDateTime = MutableStateFlow(LocalDateTime.now().withSecond(0).withNano(0))
     val incidentDateTime: StateFlow<LocalDateTime> = _incidentDateTime.asStateFlow()
 
@@ -88,6 +91,10 @@ internal class PhotoCaptureViewModel : ViewModel() {
 
     fun onObstructionTextChanged(text: String) {
         _obstructionText.value = text
+    }
+
+    fun onDurationOver60MinutesTextChanged(text: String) {
+        _durationOver60MinutesText.value = text
     }
 
     fun onIncidentDateTimeChanged(dateTime: LocalDateTime) {

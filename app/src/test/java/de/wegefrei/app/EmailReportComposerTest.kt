@@ -24,6 +24,7 @@ class EmailReportComposerTest {
             incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
             violation = "Parken im absoluten Halteverbot und Radfahrstreifen, mehr als drei Minuten, kein Fahrzeughalter in der Nähe",
             obstruction = "Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen",
+            durationOver60Minutes = "Nein",
             photoUris = emptyList(),
         )
 
@@ -41,6 +42,7 @@ class EmailReportComposerTest {
                 Angaben zum Fahrzeug, das falsch gestanden hat: KS-T 2394, Ford, Silber, PKW
                 Angaben zum Verkehrsverstoß: Parken im absoluten Halteverbot und Radfahrstreifen, mehr als drei Minuten, kein Fahrzeughalter in der Nähe
                 Angaben zu einer konkreten Verkehrsbehinderung oder -gefährdung: Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen
+                Standzeit länger als 60 Minuten: Nein
 
             Meine oben gemachten Angaben einschließlich meiner Personalien sind zutreffend und vollständig (§111 OWiG). Mir ist bewusst, dass ich als Zeuge zur wahrheitsgemäßen Aussage (§ 57 und § 161a StPO i. V. m. § 46 OWiG) und auch zu einem möglichen Erscheinen vor Gericht verpflichtet bin. Vorsätzlich falsche Angaben zu angeblichen Ordnungswidrigkeiten können eine Straftat (§ 164 StGB) darstellen.
 
