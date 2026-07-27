@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -446,18 +447,19 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RequiredSwitchField(
-                    value = parkOrHaltText,
-                    onValueChange = onParkOrHaltTextChanged,
-                    label = parkOrHaltText,
-                    onLabel = "Parken",
-                    offLabel = "Halten",
-                    modifier = Modifier.weight(1f),
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(text = parkOrHaltText, style = MaterialTheme.typography.bodyLarge)
                 IconButton(onClick = { showParkOrHaltInfo = true }) {
                     Icon(imageVector = Icons.Default.Info, contentDescription = "Erklärung zu Parken/Halten")
                 }
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(
+                    checked = parkOrHaltText == "Parken",
+                    onCheckedChange = { checked -> onParkOrHaltTextChanged(if (checked) "Parken" else "Halten") },
+                )
             }
 
             if (showParkOrHaltInfo) {
