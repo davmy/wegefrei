@@ -105,6 +105,13 @@ internal fun RequiredOptionDropdownField(
     val filteredIndices = remember(value, options, displayOptions) {
         filterOptionIndices(value, options, displayOptions)
     }
+    // The committed value always stays whatever was picked/typed (e.g. the canonical German
+    // text for a known option), but once it exactly matches a known option, show that option's
+    // display text instead — so selecting a suggestion doesn't visually revert to German.
+    val displayValue = remember(value, options, displayOptions) {
+        val index = options.indexOf(value)
+        if (index >= 0) displayOptions[index] else value
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded && filteredIndices.isNotEmpty(),
@@ -112,7 +119,7 @@ internal fun RequiredOptionDropdownField(
         modifier = modifier,
     ) {
         OutlinedTextField(
-            value = value,
+            value = displayValue,
             onValueChange = {
                 onValueChange(it)
                 expanded = true
