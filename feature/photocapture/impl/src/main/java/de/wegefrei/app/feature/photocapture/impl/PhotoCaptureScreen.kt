@@ -43,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -659,25 +660,27 @@ private fun IncidentDateTimePicker(
                         .atStartOfDay(ZoneOffset.UTC)
                         .toInstant()
                         .toEpochMilli(),
+                // Tatzeit can't be in the future, so future dates aren't pickable at all.
+                selectableDates =
+                    object : SelectableDates {
+                        override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= System.currentTimeMillis()
+                    },
             )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val selectedMillis = datePickerState.selectedDateMillis
-                        if (selectedMillis != null) {
-                            pendingDate =
-                                Instant
-                                    .ofEpochMilli(selectedMillis)
-                                    .atZone(ZoneOffset.UTC)
-                                    .toLocalDate()
-                            showDatePicker = false
-                            showTimePicker = true
-                        } else {
-                            showDatePicker = false
-                        }
+                        val selectedMillis = requireNotNull(datePickerState.selectedDateMillis)
+                        pendingDate =
+                            Instant
+                                .ofEpochMilli(selectedMillis)
+                                .atZone(ZoneOffset.UTC)
+                                .toLocalDate()
+                        showDatePicker = false
+                        showTimePicker = true
                     },
+                    enabled = datePickerState.selectedDateMillis != null,
                 ) {
                     Text(text = stringResource(R.string.dialog_confirm_ok))
                 }
@@ -700,16 +703,18 @@ private fun IncidentDateTimePicker(
                 initialMinute = incidentDateTime.minute,
                 is24Hour = true,
             )
+        val candidateDateTime = datePendingTime.atTime(timePickerState.hour, timePickerState.minute)
+        val isFuture = candidateDateTime.isAfter(LocalDateTime.now())
+
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onIncidentDateTimeChanged(
-                            datePendingTime.atTime(timePickerState.hour, timePickerState.minute),
-                        )
+                        onIncidentDateTimeChanged(candidateDateTime)
                         showTimePicker = false
                     },
+                    enabled = !isFuture,
                 ) {
                     Text(text = stringResource(R.string.dialog_confirm_ok))
                 }
@@ -720,7 +725,16 @@ private fun IncidentDateTimePicker(
                 }
             },
             text = {
-                TimePicker(state = timePickerState)
+                Column {
+                    TimePicker(state = timePickerState)
+                    if (isFuture) {
+                        Text(
+                            text = stringResource(R.string.error_incident_time_in_future),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
             },
         )
     }
