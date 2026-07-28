@@ -25,12 +25,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MyLocation
-import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -425,7 +426,7 @@ internal fun PhotoCaptureScreen(
             ) {
                 AdaptiveIconTextButton(
                     text = stringResource(R.string.button_choose_from_gallery),
-                    icon = Icons.Filled.PhotoLibrary,
+                    icon = Icons.Filled.AddPhotoAlternate,
                     onClick = {
                         galleryLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
@@ -437,7 +438,7 @@ internal fun PhotoCaptureScreen(
 
                 AdaptiveIconTextButton(
                     text = stringResource(R.string.button_take_photo),
-                    icon = Icons.Filled.PhotoCamera,
+                    icon = Icons.Filled.AddAPhoto,
                     onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
                     enabled = canAddMore,
                     modifier = Modifier.weight(1f),
@@ -820,10 +821,11 @@ private fun PhotoThumbnail(
                     .clickable(onClick = onRemove),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = stringResource(R.string.label_close_symbol),
-                color = Color.White,
-                modifier = Modifier.padding(bottom = 2.dp),
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = stringResource(R.string.cd_remove_photo),
+                tint = Color.White,
+                modifier = Modifier.size(14.dp),
             )
         }
     }
@@ -862,10 +864,10 @@ private fun PhotoPreviewDialog(
                         .clickable(onClick = onDismiss),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = stringResource(R.string.label_close_symbol),
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineSmall,
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = stringResource(R.string.cd_close_preview),
+                    tint = Color.White,
                 )
             }
         }
