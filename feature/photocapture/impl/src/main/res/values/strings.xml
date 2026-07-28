@@ -4,7 +4,7 @@
     <string name="menu_item_my_details">Meine Angaben</string>
     <string name="section_title_photos">Beweisfotos</string>
     <string name="label_photo_count">%1$d / %2$d Fotos</string>
-    <string name="button_choose_from_gallery">Aus Galerie wählen</string>
+    <string name="button_choose_from_gallery">Galerie</string>
     <string name="button_take_photo">Foto aufnehmen</string>
     <string name="section_title_vehicle">Fahrzeug</string>
     <string name="label_license_plate">Kennzeichen</string>

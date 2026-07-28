@@ -4,7 +4,7 @@
     <string name="menu_item_my_details">My details</string>
     <string name="section_title_photos">Evidence photos</string>
     <string name="label_photo_count">%1$d / %2$d photos</string>
-    <string name="button_choose_from_gallery">Choose from gallery</string>
+    <string name="button_choose_from_gallery">Gallery</string>
     <string name="button_take_photo">Take photo</string>
     <string name="section_title_vehicle">Vehicle</string>
     <string name="label_license_plate">License plate</string>
