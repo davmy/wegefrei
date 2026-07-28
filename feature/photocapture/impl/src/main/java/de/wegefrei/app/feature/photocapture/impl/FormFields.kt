@@ -45,6 +45,7 @@ internal fun RequiredTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val touchedField = rememberTouchedFieldState()
     val isError = touchedField.touched && value.isBlank()
@@ -54,6 +55,7 @@ internal fun RequiredTextField(
         onValueChange = onValueChange,
         label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
         isError = isError,
+        trailingIcon = trailingIcon,
         supportingText =
             if (isError) {
                 { Text(text = stringResource(R.string.error_required_field)) }
