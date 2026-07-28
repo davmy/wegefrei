@@ -20,13 +20,15 @@ interface AddressLookupService {
     suspend fun reverseGeocode(latitude: Double, longitude: Double): String?
 }
 
-internal class NominatimAddressLookupService : AddressLookupService {
+internal class NominatimAddressLookupService(
+    private val baseUrl: String = "https://nominatim.openstreetmap.org",
+) : AddressLookupService {
 
     override suspend fun reverseGeocode(latitude: Double, longitude: Double): String? =
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(
-                    "https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude",
+                    "$baseUrl/reverse?format=json&lat=$latitude&lon=$longitude",
                 )
                 val connection = url.openConnection() as HttpURLConnection
                 connection.setRequestProperty("User-Agent", "wegefrei-android/1.0 (+https://github.com/davmy/wegefrei)")
