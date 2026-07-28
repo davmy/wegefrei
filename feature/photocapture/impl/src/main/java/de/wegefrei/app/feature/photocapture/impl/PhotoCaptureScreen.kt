@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.AlertDialog
@@ -485,6 +486,18 @@ internal fun PhotoCaptureScreen(
                 value = addressText,
                 onValueChange = onAddressTextChanged,
                 label = stringResource(R.string.label_location),
+                trailingIcon = {
+                    if (isLookingUpAddress) {
+                        CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+                    } else {
+                        IconButton(onClick = onUseCurrentLocationRequested) {
+                            Icon(
+                                imageVector = Icons.Filled.MyLocation,
+                                contentDescription = stringResource(R.string.button_use_current_location),
+                            )
+                        }
+                    }
+                },
             )
 
             Text(
@@ -492,17 +505,6 @@ internal fun PhotoCaptureScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-
-            if (isLookingUpAddress) {
-                CircularProgressIndicator()
-            }
-
-            Button(
-                onClick = onUseCurrentLocationRequested,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.button_use_current_location))
-            }
 
             Text(
                 text = stringResource(R.string.section_title_violation),
