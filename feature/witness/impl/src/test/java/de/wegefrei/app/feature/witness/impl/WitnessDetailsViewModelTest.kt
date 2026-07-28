@@ -54,6 +54,23 @@ class WitnessDetailsViewModelTest {
     }
 
     @Test
+    fun `onEmailChanged updates the state but does not persist an invalid address`() {
+        viewModel.onEmailChanged("not-an-email")
+
+        assertEquals("not-an-email", viewModel.email.value)
+        assertEquals(null, repository.savedEmail)
+    }
+
+    @Test
+    fun `onEmailChanged persists a blank address to allow clearing the field`() {
+        viewModel.onEmailChanged("max@example.com")
+        viewModel.onEmailChanged("")
+
+        assertEquals("", viewModel.email.value)
+        assertEquals("", repository.savedEmail)
+    }
+
+    @Test
     fun `authorityEmail defaults to blank`() {
         assertEquals("", viewModel.authorityEmail.value)
     }
@@ -64,6 +81,14 @@ class WitnessDetailsViewModelTest {
 
         assertEquals("ordnungsamt@example.com", viewModel.authorityEmail.value)
         assertEquals("ordnungsamt@example.com", repository.savedAuthorityEmail)
+    }
+
+    @Test
+    fun `onAuthorityEmailChanged updates the state but does not persist an invalid address`() {
+        viewModel.onAuthorityEmailChanged("not-an-email")
+
+        assertEquals("not-an-email", viewModel.authorityEmail.value)
+        assertEquals(null, repository.savedAuthorityEmail)
     }
 
     @Test
