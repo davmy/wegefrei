@@ -21,15 +21,15 @@ import org.robolectric.RuntimeEnvironment
  */
 @RunWith(RobolectricTestRunner::class)
 class DataStoreWitnessDetailsRepositoryTest {
-
     @Test
-    fun `saveName persists and is readable back through a new repository instance`() = runTest {
-        val context = RuntimeEnvironment.getApplication()
-        val repository = DataStoreWitnessDetailsRepository(context)
+    fun `saveName persists and is readable back through a new repository instance`() =
+        runTest {
+            val context = RuntimeEnvironment.getApplication()
+            val repository = DataStoreWitnessDetailsRepository(context)
 
-        repository.saveName("Max Mustermann")
+            repository.saveName("Max Mustermann")
 
-        val newRepositoryInstance = DataStoreWitnessDetailsRepository(context)
-        assertEquals("Max Mustermann", newRepositoryInstance.name.first())
-    }
+            val newRepositoryInstance = DataStoreWitnessDetailsRepository(context)
+            assertEquals("Max Mustermann", newRepositoryInstance.name.first())
+        }
 }

@@ -21,20 +21,20 @@ interface PhotoTimestampExtractor {
 internal class ExifPhotoTimestampExtractor(
     private val context: Context,
 ) : PhotoTimestampExtractor {
-
-    override suspend fun extractTimestamp(uri: Uri): LocalDateTime? = withContext(Dispatchers.IO) {
-        try {
-            context.contentResolver.openInputStream(uri)?.use { stream ->
-                val exif = ExifInterface(stream)
-                parseExifDateTime(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))
-                    ?: parseExifDateTime(exif.getAttribute(ExifInterface.TAG_DATETIME))
+    override suspend fun extractTimestamp(uri: Uri): LocalDateTime? =
+        withContext(Dispatchers.IO) {
+            try {
+                context.contentResolver.openInputStream(uri)?.use { stream ->
+                    val exif = ExifInterface(stream)
+                    parseExifDateTime(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))
+                        ?: parseExifDateTime(exif.getAttribute(ExifInterface.TAG_DATETIME))
+                }
+            } catch (e: IOException) {
+                null
+            } catch (e: SecurityException) {
+                null
             }
-        } catch (e: IOException) {
-            null
-        } catch (e: SecurityException) {
-            null
         }
-    }
 }
 
 internal fun parseExifDateTime(rawDateTime: String?): LocalDateTime? {

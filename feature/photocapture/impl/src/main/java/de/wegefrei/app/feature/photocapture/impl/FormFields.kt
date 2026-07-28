@@ -22,13 +22,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import de.wegefrei.app.core.designsystem.rememberTouchedFieldState
 
-internal fun filterOptions(query: String, options: List<String>): List<String> =
-    options.filter { it.contains(query, ignoreCase = true) }
+internal fun filterOptions(
+    query: String,
+    options: List<String>,
+): List<String> = options.filter { it.contains(query, ignoreCase = true) }
 
 // Matches the query against either the committed value or its (possibly translated) display
 // text, so users can find an option by typing in either language — returns indices so the
 // caller can commit `options[index]` while rendering `displayOptions[index]`.
-internal fun filterOptionIndices(query: String, options: List<String>, displayOptions: List<String>): List<Int> =
+internal fun filterOptionIndices(
+    query: String,
+    options: List<String>,
+    displayOptions: List<String>,
+): List<Int> =
     options.indices.filter { index ->
         options[index].contains(query, ignoreCase = true) || displayOptions[index].contains(query, ignoreCase = true)
     }
@@ -48,14 +54,16 @@ internal fun RequiredTextField(
         onValueChange = onValueChange,
         label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
         isError = isError,
-        supportingText = if (isError) {
-            { Text(text = stringResource(R.string.error_required_field)) }
-        } else {
-            null
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .then(touchedField.modifier),
+        supportingText =
+            if (isError) {
+                { Text(text = stringResource(R.string.error_required_field)) }
+            } else {
+                null
+            },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .then(touchedField.modifier),
     )
 }
 
@@ -94,16 +102,18 @@ internal fun RequiredOptionDropdownField(
     var expanded by remember { mutableStateOf(false) }
     val touchedField = rememberTouchedFieldState(onFocusChanged = { isFocused -> expanded = isFocused })
     val isError = touchedField.touched && value.isBlank()
-    val filteredIndices = remember(value, options, displayOptions) {
-        filterOptionIndices(value, options, displayOptions)
-    }
+    val filteredIndices =
+        remember(value, options, displayOptions) {
+            filterOptionIndices(value, options, displayOptions)
+        }
     // The committed value always stays whatever was picked/typed (e.g. the canonical German
     // text for a known option), but once it exactly matches a known option, show that option's
     // display text instead — so selecting a suggestion doesn't visually revert to German.
-    val displayValue = remember(value, options, displayOptions) {
-        val index = options.indexOf(value)
-        if (index >= 0) displayOptions[index] else value
-    }
+    val displayValue =
+        remember(value, options, displayOptions) {
+            val index = options.indexOf(value)
+            if (index >= 0) displayOptions[index] else value
+        }
 
     ExposedDropdownMenuBox(
         expanded = expanded && filteredIndices.isNotEmpty(),
@@ -118,21 +128,23 @@ internal fun RequiredOptionDropdownField(
             },
             label = { Text(text = stringResource(R.string.label_required_suffix, label)) },
             isError = isError,
-            supportingText = if (isError) {
-                { Text(text = stringResource(R.string.error_required_field)) }
-            } else {
-                null
-            },
+            supportingText =
+                if (isError) {
+                    { Text(text = stringResource(R.string.error_required_field)) }
+                } else {
+                    null
+                },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = expanded,
                     modifier = Modifier.menuAnchor(MenuAnchorType.SecondaryEditable),
                 )
             },
-            modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryEditable)
-                .fillMaxWidth()
-                .then(touchedField.modifier),
+            modifier =
+                Modifier
+                    .menuAnchor(MenuAnchorType.PrimaryEditable)
+                    .fillMaxWidth()
+                    .then(touchedField.modifier),
         )
 
         ExposedDropdownMenu(

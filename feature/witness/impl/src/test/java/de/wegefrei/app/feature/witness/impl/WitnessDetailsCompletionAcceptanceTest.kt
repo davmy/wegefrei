@@ -22,20 +22,20 @@ import org.robolectric.RuntimeEnvironment
  */
 @RunWith(RobolectricTestRunner::class)
 class WitnessDetailsCompletionAcceptanceTest {
-
     @Test
-    fun `areWitnessDetailsComplete reflects the current persisted state`() = runTest {
-        val context = RuntimeEnvironment.getApplication()
-        val repository = DataStoreWitnessDetailsRepository(context)
+    fun `areWitnessDetailsComplete reflects the current persisted state`() =
+        runTest {
+            val context = RuntimeEnvironment.getApplication()
+            val repository = DataStoreWitnessDetailsRepository(context)
 
-        repository.saveName("Max Mustermann")
-        repository.saveAddress("Musterstraße 1")
-        repository.saveEmail("max@example.com")
+            repository.saveName("Max Mustermann")
+            repository.saveAddress("Musterstraße 1")
+            repository.saveEmail("max@example.com")
 
-        assertTrue(areWitnessDetailsComplete(context))
+            assertTrue(areWitnessDetailsComplete(context))
 
-        repository.saveEmail("")
+            repository.saveEmail("")
 
-        assertFalse(areWitnessDetailsComplete(context))
-    }
+            assertFalse(areWitnessDetailsComplete(context))
+        }
 }

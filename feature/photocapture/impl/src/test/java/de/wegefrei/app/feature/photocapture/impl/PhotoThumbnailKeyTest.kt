@@ -8,7 +8,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PhotoThumbnailKeyTest {
-
     @Test
     fun `keys stay unique when the same photo appears multiple times in the list`() {
         val uri = Uri.parse("content://photos/1")

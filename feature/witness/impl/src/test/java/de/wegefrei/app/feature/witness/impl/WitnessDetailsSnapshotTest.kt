@@ -18,18 +18,18 @@ import org.robolectric.RuntimeEnvironment
  */
 @RunWith(RobolectricTestRunner::class)
 class WitnessDetailsSnapshotTest {
-
     @Test
-    fun `readWitnessDetails reflects the current persisted state`() = runTest {
-        val context = RuntimeEnvironment.getApplication()
-        val repository = DataStoreWitnessDetailsRepository(context)
+    fun `readWitnessDetails reflects the current persisted state`() =
+        runTest {
+            val context = RuntimeEnvironment.getApplication()
+            val repository = DataStoreWitnessDetailsRepository(context)
 
-        repository.saveName("Max Mustermann")
-        repository.saveAddress("Musterstraße 1")
-        repository.saveEmail("max@example.com")
+            repository.saveName("Max Mustermann")
+            repository.saveAddress("Musterstraße 1")
+            repository.saveEmail("max@example.com")
 
-        val details = readWitnessDetails(context)
+            val details = readWitnessDetails(context)
 
-        assertEquals(WitnessDetails("Max Mustermann", "Musterstraße 1", "max@example.com"), details)
-    }
+            assertEquals(WitnessDetails("Max Mustermann", "Musterstraße 1", "max@example.com"), details)
+        }
 }

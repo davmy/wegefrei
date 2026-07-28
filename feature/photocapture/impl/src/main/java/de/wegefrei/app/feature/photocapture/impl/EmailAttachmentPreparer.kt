@@ -23,22 +23,26 @@ interface EmailAttachmentPreparer {
 internal class CompressingEmailAttachmentPreparer(
     private val context: Context,
 ) : EmailAttachmentPreparer {
+    override suspend fun prepareAttachments(photoUris: List<Uri>): List<Uri> =
+        withContext(Dispatchers.IO) {
+            val reportPhotosDir = File(context.cacheDir, "report_photos")
+            // Reclaim space from earlier reports before creating this one's directory. By the
+            // time a new report is being prepared, any prior report's email has already been
+            // handed off (or abandoned), so those compressed photos — which can contain other
+            // people's license plates, faces, and GPS-tagged locations — no longer need to sit in
+            // cache. Only pre-existing directories are removed, never the one about to be
+            // created, so there's no race with a mail app still reading the current attachments.
+            reportPhotosDir.listFiles()?.forEach { it.deleteRecursively() }
 
-    override suspend fun prepareAttachments(photoUris: List<Uri>): List<Uri> = withContext(Dispatchers.IO) {
-        val reportPhotosDir = File(context.cacheDir, "report_photos")
-        // Reclaim space from earlier reports before creating this one's directory. By the
-        // time a new report is being prepared, any prior report's email has already been
-        // handed off (or abandoned), so those compressed photos — which can contain other
-        // people's license plates, faces, and GPS-tagged locations — no longer need to sit in
-        // cache. Only pre-existing directories are removed, never the one about to be
-        // created, so there's no race with a mail app still reading the current attachments.
-        reportPhotosDir.listFiles()?.forEach { it.deleteRecursively() }
+            val outputDir = File(reportPhotosDir, "${System.currentTimeMillis()}").apply { mkdirs() }
+            photoUris.mapIndexedNotNull { index, uri -> compressAndStore(uri, index, outputDir) }
+        }
 
-        val outputDir = File(reportPhotosDir, "${System.currentTimeMillis()}").apply { mkdirs() }
-        photoUris.mapIndexedNotNull { index, uri -> compressAndStore(uri, index, outputDir) }
-    }
-
-    private fun compressAndStore(uri: Uri, index: Int, outputDir: File): Uri? {
+    private fun compressAndStore(
+        uri: Uri,
+        index: Int,
+        outputDir: File,
+    ): Uri? {
         return try {
             val bitmap = decodeSampledBitmap(uri) ?: return null
             val outputFile = File(outputDir, "report_photo_$index.jpg")
@@ -74,14 +78,18 @@ internal class CompressingEmailAttachmentPreparer(
         }
 
         val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
-        val decoded = context.contentResolver.openInputStream(uri)?.use { stream ->
-            BitmapFactory.decodeStream(stream, null, decodeOptions)
-        } ?: return null
+        val decoded =
+            context.contentResolver.openInputStream(uri)?.use { stream ->
+                BitmapFactory.decodeStream(stream, null, decodeOptions)
+            } ?: return null
 
         return applyExifRotation(uri, decoded)
     }
 
-    private fun applyExifRotation(uri: Uri, source: Bitmap): Bitmap {
+    private fun applyExifRotation(
+        uri: Uri,
+        source: Bitmap,
+    ): Bitmap {
         val degrees = readExifOrientationDegrees(uri)
         if (degrees == 0f) return source
 
@@ -94,18 +102,19 @@ internal class CompressingEmailAttachmentPreparer(
     }
 
     private fun readExifOrientationDegrees(uri: Uri): Float {
-        val orientation = try {
-            context.contentResolver.openInputStream(uri)?.use { stream ->
-                ExifInterface(stream).getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL,
-                )
-            } ?: ExifInterface.ORIENTATION_NORMAL
-        } catch (e: IOException) {
-            ExifInterface.ORIENTATION_NORMAL
-        } catch (e: SecurityException) {
-            ExifInterface.ORIENTATION_NORMAL
-        }
+        val orientation =
+            try {
+                context.contentResolver.openInputStream(uri)?.use { stream ->
+                    ExifInterface(stream).getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL,
+                    )
+                } ?: ExifInterface.ORIENTATION_NORMAL
+            } catch (e: IOException) {
+                ExifInterface.ORIENTATION_NORMAL
+            } catch (e: SecurityException) {
+                ExifInterface.ORIENTATION_NORMAL
+            }
 
         return when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90 -> 90f
@@ -116,5 +125,4 @@ internal class CompressingEmailAttachmentPreparer(
     }
 }
 
-fun emailAttachmentPreparer(context: Context): EmailAttachmentPreparer =
-    CompressingEmailAttachmentPreparer(context)
+fun emailAttachmentPreparer(context: Context): EmailAttachmentPreparer = CompressingEmailAttachmentPreparer(context)

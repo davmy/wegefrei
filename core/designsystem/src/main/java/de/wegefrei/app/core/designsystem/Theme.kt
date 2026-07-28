@@ -10,17 +10,19 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Green80,
-    secondary = GreenGrey80,
-    tertiary = Amber80,
-)
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = Green80,
+        secondary = GreenGrey80,
+        tertiary = Amber80,
+    )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Green40,
-    secondary = GreenGrey40,
-    tertiary = Amber40,
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = Green40,
+        secondary = GreenGrey40,
+        tertiary = Amber40,
+    )
 
 @Composable
 fun WegefreiTheme(
@@ -28,14 +30,15 @@ fun WegefreiTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val colorScheme =
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
         }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
 
     MaterialTheme(
         colorScheme = colorScheme,

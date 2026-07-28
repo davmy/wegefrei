@@ -2,15 +2,14 @@ package de.wegefrei.app.feature.photocapture.impl
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.LocalDateTime
 
 internal const val MAX_PHOTOS = 5
 
 internal class PhotoCaptureViewModel : ViewModel() {
-
     private val _photoUris = MutableStateFlow<List<Uri>>(emptyList())
     val photoUris: StateFlow<List<Uri>> = _photoUris.asStateFlow()
 

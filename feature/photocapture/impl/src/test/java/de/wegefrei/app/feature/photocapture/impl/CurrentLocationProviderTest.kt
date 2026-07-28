@@ -6,9 +6,6 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -20,6 +17,9 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowLocationManager
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Exercises [AndroidCurrentLocationProvider] against the real permission-check/LocationManager
@@ -28,7 +28,6 @@ import org.robolectric.shadows.ShadowLocationManager
  */
 @RunWith(RobolectricTestRunner::class)
 class CurrentLocationProviderTest {
-
     private val context: Application get() = RuntimeEnvironment.getApplication()
 
     private fun shadowLocationManager(): ShadowLocationManager =
@@ -38,33 +37,38 @@ class CurrentLocationProviderTest {
         shadowOf(context).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    private fun location(latitude: Double, longitude: Double): Location =
+    private fun location(
+        latitude: Double,
+        longitude: Double,
+    ): Location =
         Location(LocationManager.GPS_PROVIDER).apply {
             this.latitude = latitude
             this.longitude = longitude
         }
 
     @Test
-    fun `getCurrentLocation returns null without a location permission`() = runTest {
-        shadowLocationManager().setProviderEnabled(LocationManager.GPS_PROVIDER, true)
-        val provider = AndroidCurrentLocationProvider(context)
+    fun `getCurrentLocation returns null without a location permission`() =
+        runTest {
+            shadowLocationManager().setProviderEnabled(LocationManager.GPS_PROVIDER, true)
+            val provider = AndroidCurrentLocationProvider(context)
 
-        val result = provider.getCurrentLocation()
+            val result = provider.getCurrentLocation()
 
-        assertNull(result)
-    }
+            assertNull(result)
+        }
 
     @Test
-    fun `getCurrentLocation returns null when no provider is enabled`() = runTest {
-        grantLocationPermission()
-        shadowLocationManager().setProviderEnabled(LocationManager.GPS_PROVIDER, false)
-        shadowLocationManager().setProviderEnabled(LocationManager.NETWORK_PROVIDER, false)
-        val provider = AndroidCurrentLocationProvider(context)
+    fun `getCurrentLocation returns null when no provider is enabled`() =
+        runTest {
+            grantLocationPermission()
+            shadowLocationManager().setProviderEnabled(LocationManager.GPS_PROVIDER, false)
+            shadowLocationManager().setProviderEnabled(LocationManager.NETWORK_PROVIDER, false)
+            val provider = AndroidCurrentLocationProvider(context)
 
-        val result = provider.getCurrentLocation()
+            val result = provider.getCurrentLocation()
 
-        assertNull(result)
-    }
+            assertNull(result)
+        }
 
     /**
      * [AndroidCurrentLocationProvider.getCurrentLocation] delivers its result through
@@ -74,13 +78,17 @@ class CurrentLocationProviderTest {
      * Looper, and repeat until the background call resumes or a timeout trips - avoiding a
      * race between "the request registers with the shadow" and "we simulate a location for it".
      */
-    private fun awaitCurrentLocation(provider: AndroidCurrentLocationProvider, fix: () -> Unit): LatLng? {
+    private fun awaitCurrentLocation(
+        provider: AndroidCurrentLocationProvider,
+        fix: () -> Unit,
+    ): LatLng? {
         val result = AtomicReference<LatLng?>()
         val done = CountDownLatch(1)
-        val thread = Thread {
-            result.set(runBlocking { provider.getCurrentLocation() })
-            done.countDown()
-        }
+        val thread =
+            Thread {
+                result.set(runBlocking { provider.getCurrentLocation() })
+                done.countDown()
+            }
         thread.start()
 
         val deadlineMillis = System.currentTimeMillis() + 5_000
@@ -114,9 +122,10 @@ class CurrentLocationProviderTest {
         val provider = AndroidCurrentLocationProvider(context)
         val fix = location(48.1351, 11.5820)
 
-        val result = awaitCurrentLocation(provider) {
-            shadowLocationManager().simulateLocation(LocationManager.NETWORK_PROVIDER, fix)
-        }
+        val result =
+            awaitCurrentLocation(provider) {
+                shadowLocationManager().simulateLocation(LocationManager.NETWORK_PROVIDER, fix)
+            }
 
         assertEquals(LatLng(latitude = 48.1351, longitude = 11.5820), result)
     }

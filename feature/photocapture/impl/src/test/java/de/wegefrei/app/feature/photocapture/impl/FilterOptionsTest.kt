@@ -7,7 +7,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class FilterOptionsTest {
-
     @Test
     fun `blank query returns all brands`() {
         val result = filterOptions("", germanCarBrands)
@@ -109,11 +108,12 @@ class FilterOptionsTest {
 
     @Test
     fun `filterOptionIndices matches against the committed option`() {
-        val result = filterOptionIndices(
-            query = "Vol",
-            options = germanCarBrands,
-            displayOptions = germanCarBrands,
-        )
+        val result =
+            filterOptionIndices(
+                query = "Vol",
+                options = germanCarBrands,
+                displayOptions = germanCarBrands,
+            )
 
         assertEquals(listOf(germanCarBrands.indexOf("Volkswagen"), germanCarBrands.indexOf("Volvo")), result)
     }

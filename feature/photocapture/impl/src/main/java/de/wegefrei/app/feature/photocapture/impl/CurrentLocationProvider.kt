@@ -16,24 +16,25 @@ interface CurrentLocationProvider {
 internal class AndroidCurrentLocationProvider(
     private val context: Context,
 ) : CurrentLocationProvider {
-
     override suspend fun getCurrentLocation(): LatLng? {
-        val hasPermission = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        ) == PackageManager.PERMISSION_GRANTED ||
+        val hasPermission =
             ContextCompat.checkSelfPermission(
                 context,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ) == PackageManager.PERMISSION_GRANTED
         if (!hasPermission) return null
 
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val provider = when {
-            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) -> LocationManager.GPS_PROVIDER
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) -> LocationManager.NETWORK_PROVIDER
-            else -> return null
-        }
+        val provider =
+            when {
+                locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) -> LocationManager.GPS_PROVIDER
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) -> LocationManager.NETWORK_PROVIDER
+                else -> return null
+            }
 
         return suspendCancellableCoroutine { continuation ->
             val cancellationSignal = CancellationSignal()

@@ -18,15 +18,17 @@ internal interface WitnessDetailsRepository {
     val name: Flow<String>
     val address: Flow<String>
     val email: Flow<String>
+
     suspend fun saveName(value: String)
+
     suspend fun saveAddress(value: String)
+
     suspend fun saveEmail(value: String)
 }
 
 internal class DataStoreWitnessDetailsRepository(
     context: Context,
 ) : WitnessDetailsRepository {
-
     private val appContext = context.applicationContext
 
     override val name: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[NAME_KEY] ?: "" }

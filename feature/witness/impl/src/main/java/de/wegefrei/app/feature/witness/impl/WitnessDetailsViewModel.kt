@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 internal class WitnessDetailsViewModel(
     private val repository: WitnessDetailsRepository,
 ) : ViewModel() {
-
     private val _name = MutableStateFlow("")
     val name: StateFlow<String> = _name.asStateFlow()
 

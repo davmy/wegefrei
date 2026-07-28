@@ -8,7 +8,6 @@ internal class FakeWitnessDetailsRepository(
     initialAddress: String = "",
     initialEmail: String = "",
 ) : WitnessDetailsRepository {
-
     private val nameFlow = MutableStateFlow(initialName)
     private val addressFlow = MutableStateFlow(initialAddress)
     private val emailFlow = MutableStateFlow(initialEmail)

@@ -1,5 +1,5 @@
-import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -10,20 +10,30 @@ plugins {
 // keystore.properties.example) so credentials never end up in source control. Without it,
 // assembleRelease/bundleRelease still work but produce an unsigned build.
 val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties().apply {
-    if (keystorePropertiesFile.exists()) {
-        keystorePropertiesFile.inputStream().use { load(it) }
+val keystoreProperties =
+    Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            keystorePropertiesFile.inputStream().use { load(it) }
+        }
     }
-}
 
 android {
     namespace = "de.wegefrei.app"
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "de.wegefrei.app"
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.targetSdk
+                .get()
+                .toInt()
         versionCode = 1
         versionName = "0.1.0"
 

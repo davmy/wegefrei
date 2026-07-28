@@ -1,36 +1,37 @@
 package de.wegefrei.app
 
-import android.net.Uri
 import de.wegefrei.app.feature.photocapture.impl.ReportDetails
 import de.wegefrei.app.feature.witness.impl.WitnessDetails
-import java.time.LocalDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.time.LocalDateTime
 
 class EmailReportComposerTest {
-
     @Test
     fun `buildReportEmailBody matches the required template exactly`() {
-        val witness = WitnessDetails(
-            name = "Max Mustermann",
-            address = "Musterstraße 1, 12345 Musterstadt",
-            email = "max@example.com",
-        )
-        val report = ReportDetails(
-            licensePlate = "KS-T 2394",
-            make = "Ford",
-            color = "Silber",
-            address = "Musterplatz 5, 12345 Musterstadt",
-            incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
-            violation = "Parken im absoluten Halteverbot und Radfahrstreifen, mehr als drei Minuten, kein Fahrzeughalter in der Nähe",
-            obstruction = "Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen",
-            durationOver60Minutes = "Nein",
-            photoUris = emptyList(),
-        )
+        val witness =
+            WitnessDetails(
+                name = "Max Mustermann",
+                address = "Musterstraße 1, 12345 Musterstadt",
+                email = "max@example.com",
+            )
+        val report =
+            ReportDetails(
+                licensePlate = "KS-T 2394",
+                make = "Ford",
+                color = "Silber",
+                address = "Musterplatz 5, 12345 Musterstadt",
+                incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
+                violation = "Parken im absoluten Halteverbot und Radfahrstreifen, mehr als drei Minuten, kein Fahrzeughalter in der Nähe",
+                obstruction = "Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen",
+                durationOver60Minutes = "Nein",
+                photoUris = emptyList(),
+            )
 
         val body = buildReportEmailBody(witness, report)
 
-        val expected = """
+        val expected =
+            """
             Sehr geehrte Damen und Herren,
 
             ich möchte folgende Verkehrsordnungswidrigkeit zur Anzeige bringen, mit der Bitte um Weiterverfolgung:
@@ -48,33 +49,36 @@ class EmailReportComposerTest {
 
             Mit freundlichen Grüßen
             Max Mustermann
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals(expected, body)
     }
 
     @Test
     fun `buildReportEmailBody omits the duration line when durationOver60Minutes is null`() {
-        val witness = WitnessDetails(
-            name = "Max Mustermann",
-            address = "Musterstraße 1, 12345 Musterstadt",
-            email = "max@example.com",
-        )
-        val report = ReportDetails(
-            licensePlate = "KS-T 2394",
-            make = "Ford",
-            color = "Silber",
-            address = "Musterplatz 5, 12345 Musterstadt",
-            incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
-            violation = "Halten im absoluten Halteverbot",
-            obstruction = "Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen",
-            durationOver60Minutes = null,
-            photoUris = emptyList(),
-        )
+        val witness =
+            WitnessDetails(
+                name = "Max Mustermann",
+                address = "Musterstraße 1, 12345 Musterstadt",
+                email = "max@example.com",
+            )
+        val report =
+            ReportDetails(
+                licensePlate = "KS-T 2394",
+                make = "Ford",
+                color = "Silber",
+                address = "Musterplatz 5, 12345 Musterstadt",
+                incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
+                violation = "Halten im absoluten Halteverbot",
+                obstruction = "Ich als Radfahrer muss auf die reguläre Fahrspur ausweichen",
+                durationOver60Minutes = null,
+                photoUris = emptyList(),
+            )
 
         val body = buildReportEmailBody(witness, report)
 
-        val expected = """
+        val expected =
+            """
             Sehr geehrte Damen und Herren,
 
             ich möchte folgende Verkehrsordnungswidrigkeit zur Anzeige bringen, mit der Bitte um Weiterverfolgung:
@@ -91,33 +95,36 @@ class EmailReportComposerTest {
 
             Mit freundlichen Grüßen
             Max Mustermann
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals(expected, body)
     }
 
     @Test
     fun `buildReportEmailBody omits the obstruction line when obstruction is null`() {
-        val witness = WitnessDetails(
-            name = "Max Mustermann",
-            address = "Musterstraße 1, 12345 Musterstadt",
-            email = "max@example.com",
-        )
-        val report = ReportDetails(
-            licensePlate = "KS-T 2394",
-            make = "Ford",
-            color = "Silber",
-            address = "Musterplatz 5, 12345 Musterstadt",
-            incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
-            violation = "Parken im absoluten Halteverbot",
-            obstruction = null,
-            durationOver60Minutes = "Nein",
-            photoUris = emptyList(),
-        )
+        val witness =
+            WitnessDetails(
+                name = "Max Mustermann",
+                address = "Musterstraße 1, 12345 Musterstadt",
+                email = "max@example.com",
+            )
+        val report =
+            ReportDetails(
+                licensePlate = "KS-T 2394",
+                make = "Ford",
+                color = "Silber",
+                address = "Musterplatz 5, 12345 Musterstadt",
+                incidentDateTime = LocalDateTime.of(2011, 10, 6, 11, 27),
+                violation = "Parken im absoluten Halteverbot",
+                obstruction = null,
+                durationOver60Minutes = "Nein",
+                photoUris = emptyList(),
+            )
 
         val body = buildReportEmailBody(witness, report)
 
-        val expected = """
+        val expected =
+            """
             Sehr geehrte Damen und Herren,
 
             ich möchte folgende Verkehrsordnungswidrigkeit zur Anzeige bringen, mit der Bitte um Weiterverfolgung:
@@ -134,7 +141,7 @@ class EmailReportComposerTest {
 
             Mit freundlichen Grüßen
             Max Mustermann
-        """.trimIndent()
+            """.trimIndent()
 
         assertEquals(expected, body)
     }

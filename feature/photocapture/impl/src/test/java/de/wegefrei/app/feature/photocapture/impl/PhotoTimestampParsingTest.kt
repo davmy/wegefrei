@@ -1,15 +1,14 @@
 package de.wegefrei.app.feature.photocapture.impl
 
-import java.time.LocalDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.LocalDateTime
 
 @RunWith(RobolectricTestRunner::class)
 class PhotoTimestampParsingTest {
-
     @Test
     fun `parseExifDateTime parses a valid timestamp and truncates seconds`() {
         val result = parseExifDateTime("2026:07:26 10:15:30")
