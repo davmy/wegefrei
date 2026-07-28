@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MyLocation
@@ -643,6 +645,8 @@ private fun IncidentDateTimePicker(
         onClick = { showDatePicker = true },
         modifier = Modifier.fillMaxWidth(),
     ) {
+        Icon(imageVector = Icons.Filled.DateRange, contentDescription = null)
+        Spacer(modifier = Modifier.width(8.dp))
         Text(text = incidentDateTime.format(INCIDENT_DATE_TIME_FORMATTER))
     }
 
