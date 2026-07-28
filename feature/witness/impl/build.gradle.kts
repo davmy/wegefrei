@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":feature:witness:api"))
     implementation(project(":core:designsystem"))
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
 

@@ -1,5 +1,6 @@
 package de.wegefrei.app.feature.witness.impl
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +24,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -79,12 +82,24 @@ internal fun WitnessDetailsScreen(
     onAuthorityEmailChanged: (String) -> Unit,
     onBackRequested: () -> Unit,
 ) {
+    var showAllErrors by remember { mutableStateOf(false) }
+    val isValid =
+        name.isNotBlank() &&
+            address.isNotBlank() &&
+            isValidEmail(email) &&
+            (authorityEmail.isBlank() || isValidEmail(authorityEmail))
+    val attemptBack = {
+        if (isValid) onBackRequested() else showAllErrors = true
+    }
+
+    BackHandler(onBack = attemptBack)
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.title_witness_details_screen)) },
                 navigationIcon = {
-                    IconButton(onClick = onBackRequested) {
+                    IconButton(onClick = attemptBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.cd_back),
@@ -115,18 +130,21 @@ internal fun WitnessDetailsScreen(
                 value = name,
                 onValueChange = onNameChanged,
                 label = stringResource(R.string.label_name),
+                forceShowErrors = showAllErrors,
             )
 
             WitnessTextField(
                 value = address,
                 onValueChange = onAddressChanged,
                 label = stringResource(R.string.label_address),
+                forceShowErrors = showAllErrors,
             )
 
             WitnessTextField(
                 value = email,
                 onValueChange = onEmailChanged,
                 label = stringResource(R.string.label_email),
+                forceShowErrors = showAllErrors,
                 validate = { value ->
                     when {
                         value.isBlank() -> stringResource(R.string.error_required_field)
@@ -143,6 +161,7 @@ internal fun WitnessDetailsScreen(
                 onValueChange = onAuthorityEmailChanged,
                 label = stringResource(R.string.label_email_authority),
                 required = false,
+                forceShowErrors = showAllErrors,
                 validate = { value ->
                     if (value.isNotBlank() && !isValidEmail(value)) stringResource(R.string.error_invalid_email) else null
                 },
@@ -158,10 +177,11 @@ private fun WitnessTextField(
     label: String,
     modifier: Modifier = Modifier,
     required: Boolean = true,
+    forceShowErrors: Boolean = false,
     validate: @Composable (String) -> String? = { if (it.isBlank()) stringResource(R.string.error_required_field) else null },
 ) {
     val touchedField = rememberTouchedFieldState()
-    val errorMessage = if (touchedField.touched) validate(value) else null
+    val errorMessage = if (touchedField.touched || forceShowErrors) validate(value) else null
 
     OutlinedTextField(
         value = value,
