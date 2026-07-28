@@ -26,6 +26,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -58,10 +60,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -410,24 +415,29 @@ internal fun PhotoCaptureScreen(
                 }
             }
 
-            Button(
-                onClick = {
-                    galleryLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
-                    )
-                },
-                enabled = canAddMore,
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(text = stringResource(R.string.button_choose_from_gallery))
-            }
+                AdaptiveIconTextButton(
+                    text = stringResource(R.string.button_choose_from_gallery),
+                    icon = Icons.Filled.PhotoLibrary,
+                    onClick = {
+                        galleryLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
+                        )
+                    },
+                    enabled = canAddMore,
+                    modifier = Modifier.weight(1f),
+                )
 
-            Button(
-                onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
-                enabled = canAddMore,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(R.string.button_take_photo))
+                AdaptiveIconTextButton(
+                    text = stringResource(R.string.button_take_photo),
+                    icon = Icons.Filled.PhotoCamera,
+                    onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) },
+                    enabled = canAddMore,
+                    modifier = Modifier.weight(1f),
+                )
             }
 
             Text(
@@ -707,6 +717,58 @@ private fun IncidentDateTimePicker(
                 TimePicker(state = timePickerState)
             },
         )
+    }
+}
+
+/**
+ * A [Button] that shows [icon] plus [text] when there's room for both, or just [icon] once the
+ * available width is too narrow to fit the text without truncating it. Measures the full
+ * (icon + text) content once at its natural width to decide which layout fits, then measures
+ * again for the one actually chosen — [SubcomposeLayout] doesn't allow measuring the same
+ * subcomposition twice.
+ */
+@Composable
+private fun AdaptiveIconTextButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Button(onClick = onClick, enabled = enabled, modifier = modifier) {
+        SubcomposeLayout { constraints ->
+            val naturalWidth =
+                subcompose("probe") { IconTextButtonContent(icon, text) }
+                    .map { it.measure(Constraints()) }
+                    .maxOf { it.width }
+
+            val placeables =
+                if (naturalWidth <= constraints.maxWidth) {
+                    subcompose("full") { IconTextButtonContent(icon, text) }
+                } else {
+                    subcompose("iconOnly") { Icon(imageVector = icon, contentDescription = text) }
+                }.map { it.measure(constraints.copy(minWidth = 0)) }
+
+            val width = placeables.maxOf { it.width }
+            val height = placeables.maxOf { it.height }
+            layout(width, height) {
+                placeables.forEach { it.place(0, 0) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun IconTextButtonContent(
+    icon: ImageVector,
+    text: String,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(imageVector = icon, contentDescription = null)
+        Text(text = text, maxLines = 1)
     }
 }
 
