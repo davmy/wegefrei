@@ -1,0 +1,9 @@
+<resources>
+    <!-- Overrides Material3's own m3c_date_input_invalid_not_allowed string (shown when a date
+         is manually typed into the DatePicker's text-input mode and rejected by
+         selectableDates). Material3 ships its own German translation as a "de"-qualified
+         resource, which otherwise wins over an override placed only in the default values/
+         folder - it has to be overridden here, under the same "de" qualifier, to actually
+         take effect on a German-locale device. -->
+    <string name="m3c_date_input_invalid_not_allowed">Tatzeit darf nicht in der Zukunft liegen</string>
+</resources>

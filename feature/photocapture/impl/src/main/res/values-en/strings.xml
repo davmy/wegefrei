@@ -31,6 +31,7 @@
     <string name="label_required_suffix">%1$s *</string>
     <string name="error_required_field">Required field</string>
     <string name="error_incident_time_in_future">Incident time can\'t be in the future</string>
+    <string name="m3c_date_input_invalid_not_allowed">Incident time can\'t be in the future</string>
     <string name="word_parking">Parking</string>
     <string name="word_halting">Stopping</string>
     <string-array name="violation_templates">
