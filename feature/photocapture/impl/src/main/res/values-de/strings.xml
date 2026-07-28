@@ -6,4 +6,10 @@
          folder - it has to be overridden here, under the same "de" qualifier, to actually
          take effect on a German-locale device. -->
     <string name="m3c_date_input_invalid_not_allowed">Tatzeit darf nicht in der Zukunft liegen</string>
+    <!-- Same reasoning as above: overrides the "Eingabedatum" placeholder headline Material3
+         shows in place of the formatted date once a manually typed value is rejected. Left
+         blank rather than replaced, since the error text below the field already explains
+         what's wrong; showing another distinct phrase here would just be a second, redundant
+         message competing for attention. -->
+    <string name="m3c_date_input_headline"></string>
 </resources>

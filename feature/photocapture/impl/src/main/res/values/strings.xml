@@ -32,6 +32,7 @@
     <string name="error_required_field">Pflichtfeld</string>
     <string name="error_incident_time_in_future">Tatzeit darf nicht in der Zukunft liegen</string>
     <string name="m3c_date_input_invalid_not_allowed">Tatzeit darf nicht in der Zukunft liegen</string>
+    <string name="m3c_date_input_headline"></string>
     <string name="word_parking">Parken</string>
     <string name="word_halting">Halten</string>
     <string-array name="violation_templates">

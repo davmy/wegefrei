@@ -671,19 +671,16 @@ private fun IncidentDateTimePicker(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val selectedMillis = datePickerState.selectedDateMillis
-                        if (selectedMillis != null) {
-                            pendingDate =
-                                Instant
-                                    .ofEpochMilli(selectedMillis)
-                                    .atZone(ZoneOffset.UTC)
-                                    .toLocalDate()
-                            showDatePicker = false
-                            showTimePicker = true
-                        } else {
-                            showDatePicker = false
-                        }
+                        val selectedMillis = requireNotNull(datePickerState.selectedDateMillis)
+                        pendingDate =
+                            Instant
+                                .ofEpochMilli(selectedMillis)
+                                .atZone(ZoneOffset.UTC)
+                                .toLocalDate()
+                        showDatePicker = false
+                        showTimePicker = true
                     },
+                    enabled = datePickerState.selectedDateMillis != null,
                 ) {
                     Text(text = stringResource(R.string.dialog_confirm_ok))
                 }
