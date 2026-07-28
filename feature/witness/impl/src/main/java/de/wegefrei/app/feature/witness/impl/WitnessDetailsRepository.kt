@@ -13,17 +13,21 @@ private val Context.witnessDetailsDataStore by preferencesDataStore(name = "witn
 private val NAME_KEY = stringPreferencesKey("name")
 private val ADDRESS_KEY = stringPreferencesKey("address")
 private val EMAIL_KEY = stringPreferencesKey("email")
+private val AUTHORITY_EMAIL_KEY = stringPreferencesKey("authority_email")
 
 internal interface WitnessDetailsRepository {
     val name: Flow<String>
     val address: Flow<String>
     val email: Flow<String>
+    val authorityEmail: Flow<String>
 
     suspend fun saveName(value: String)
 
     suspend fun saveAddress(value: String)
 
     suspend fun saveEmail(value: String)
+
+    suspend fun saveAuthorityEmail(value: String)
 }
 
 internal class DataStoreWitnessDetailsRepository(
@@ -34,6 +38,8 @@ internal class DataStoreWitnessDetailsRepository(
     override val name: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[NAME_KEY] ?: "" }
     override val address: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[ADDRESS_KEY] ?: "" }
     override val email: Flow<String> = appContext.witnessDetailsDataStore.data.map { it[EMAIL_KEY] ?: "" }
+    override val authorityEmail: Flow<String> =
+        appContext.witnessDetailsDataStore.data.map { it[AUTHORITY_EMAIL_KEY] ?: "" }
 
     override suspend fun saveName(value: String) {
         appContext.witnessDetailsDataStore.edit { it[NAME_KEY] = value }
@@ -46,12 +52,17 @@ internal class DataStoreWitnessDetailsRepository(
     override suspend fun saveEmail(value: String) {
         appContext.witnessDetailsDataStore.edit { it[EMAIL_KEY] = value }
     }
+
+    override suspend fun saveAuthorityEmail(value: String) {
+        appContext.witnessDetailsDataStore.edit { it[AUTHORITY_EMAIL_KEY] = value }
+    }
 }
 
 data class WitnessDetails(
     val name: String,
     val address: String,
     val email: String,
+    val authorityEmail: String = "",
 )
 
 suspend fun readWitnessDetails(context: Context): WitnessDetails {
@@ -60,5 +71,6 @@ suspend fun readWitnessDetails(context: Context): WitnessDetails {
         name = repository.name.first(),
         address = repository.address.first(),
         email = repository.email.first(),
+        authorityEmail = repository.authorityEmail.first(),
     )
 }

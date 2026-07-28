@@ -59,13 +59,11 @@ class WitnessDetailsViewModelTest {
     }
 
     @Test
-    fun `onAuthorityEmailChanged updates the state without persisting it`() {
+    fun `onAuthorityEmailChanged updates the state and persists it`() {
         viewModel.onAuthorityEmailChanged("ordnungsamt@example.com")
 
         assertEquals("ordnungsamt@example.com", viewModel.authorityEmail.value)
-        assertEquals(null, repository.savedName)
-        assertEquals(null, repository.savedAddress)
-        assertEquals(null, repository.savedEmail)
+        assertEquals("ordnungsamt@example.com", repository.savedAuthorityEmail)
     }
 
     @Test
@@ -75,6 +73,7 @@ class WitnessDetailsViewModelTest {
                 initialName = "Erika Musterfrau",
                 initialAddress = "Beispielweg 2",
                 initialEmail = "erika@example.com",
+                initialAuthorityEmail = "ordnungsamt@example.com",
             )
 
         val loadedViewModel = WitnessDetailsViewModel(prefilled)
@@ -82,5 +81,6 @@ class WitnessDetailsViewModelTest {
         assertEquals("Erika Musterfrau", loadedViewModel.name.value)
         assertEquals("Beispielweg 2", loadedViewModel.address.value)
         assertEquals("erika@example.com", loadedViewModel.email.value)
+        assertEquals("ordnungsamt@example.com", loadedViewModel.authorityEmail.value)
     }
 }

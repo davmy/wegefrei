@@ -1,11 +1,16 @@
 package de.wegefrei.app
 
+import android.content.Intent
 import de.wegefrei.app.feature.photocapture.impl.ReportDetails
 import de.wegefrei.app.feature.witness.impl.WitnessDetails
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.time.LocalDateTime
 
+@RunWith(RobolectricTestRunner::class)
 class EmailReportComposerTest {
     @Test
     fun `buildReportEmailBody matches the required template exactly`() {
@@ -149,5 +154,26 @@ class EmailReportComposerTest {
     @Test
     fun `buildReportEmailSubject returns a fixed subject`() {
         assertEquals("Anzeige einer Verkehrsordnungswidrigkeit", buildReportEmailSubject())
+    }
+
+    @Test
+    fun `buildReportEmailIntent sets the recipient when an authority email is given`() {
+        val intent = buildReportEmailIntent("Betreff", "Text", emptyList(), "ordnungsamt@example.com")
+
+        assertEquals(listOf("ordnungsamt@example.com"), intent.getStringArrayExtra(Intent.EXTRA_EMAIL)?.toList())
+    }
+
+    @Test
+    fun `buildReportEmailIntent omits the recipient when no authority email is given`() {
+        val intent = buildReportEmailIntent("Betreff", "Text", emptyList(), null)
+
+        assertNull(intent.getStringArrayExtra(Intent.EXTRA_EMAIL))
+    }
+
+    @Test
+    fun `buildReportEmailIntent omits the recipient when the authority email is blank`() {
+        val intent = buildReportEmailIntent("Betreff", "Text", emptyList(), "   ")
+
+        assertNull(intent.getStringArrayExtra(Intent.EXTRA_EMAIL))
     }
 }
