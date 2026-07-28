@@ -26,8 +26,9 @@
     <string name="button_next">Next</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="cd_photo_thumbnail">Photo</string>
-    <string name="label_close_symbol">×</string>
+    <string name="cd_remove_photo">Remove photo</string>
     <string name="cd_photo_preview">Photo preview</string>
+    <string name="cd_close_preview">Close</string>
     <string name="label_required_suffix">%1$s *</string>
     <string name="error_required_field">Required field</string>
     <string name="error_incident_time_in_future">Incident time can\'t be in the future</string>

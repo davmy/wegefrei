@@ -26,8 +26,9 @@
     <string name="button_next">Weiter</string>
     <string name="dialog_cancel">Abbrechen</string>
     <string name="cd_photo_thumbnail">Foto</string>
-    <string name="label_close_symbol">×</string>
+    <string name="cd_remove_photo">Foto entfernen</string>
     <string name="cd_photo_preview">Fotovorschau</string>
+    <string name="cd_close_preview">Schließen</string>
     <string name="label_required_suffix">%1$s *</string>
     <string name="error_required_field">Pflichtfeld</string>
     <string name="error_incident_time_in_future">Tatzeit darf nicht in der Zukunft liegen</string>
