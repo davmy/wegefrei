@@ -42,11 +42,18 @@ internal class WitnessDetailsViewModel(
 
     fun onEmailChanged(value: String) {
         _email.value = value
-        viewModelScope.launch { repository.saveEmail(value) }
+        // Only ever persist a blank or valid address - never a value that's mid-typing/wrong,
+        // so an invalid email can't end up saved just because the app gets closed before it's
+        // corrected (there's no way to intercept that the way in-app navigation can be).
+        if (value.isBlank() || isValidEmail(value)) {
+            viewModelScope.launch { repository.saveEmail(value) }
+        }
     }
 
     fun onAuthorityEmailChanged(value: String) {
         _authorityEmail.value = value
-        viewModelScope.launch { repository.saveAuthorityEmail(value) }
+        if (value.isBlank() || isValidEmail(value)) {
+            viewModelScope.launch { repository.saveAuthorityEmail(value) }
+        }
     }
 }
