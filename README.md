@@ -3,6 +3,7 @@
 [![CI](https://github.com/davmy/wegefrei/actions/workflows/ci.yml/badge.svg)](https://github.com/davmy/wegefrei/actions/workflows/ci.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4.10-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Min SDK](https://img.shields.io/badge/minSdk-33-brightgreen)](https://developer.android.com/tools/releases/platforms#33)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 Android app for reporting illegally parked vehicles in Germany.
 
@@ -50,3 +51,7 @@ Each feature is developed on its own branch (`feature/*`). Pull requests are cre
 ### Build
 
 `./gradlew :app:assembleDebug` is enough — the Gradle wrapper fetches a suitable JDK 21 itself via `gradle/gradle-daemon-jvm.properties` if needed.
+
+## License
+
+[GPL-3.0](LICENSE)
