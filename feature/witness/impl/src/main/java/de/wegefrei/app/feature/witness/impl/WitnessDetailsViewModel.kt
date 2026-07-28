@@ -20,8 +20,6 @@ internal class WitnessDetailsViewModel(
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email.asStateFlow()
 
-    // Not persisted or prefilled — the responsible Ordnungsamt differs per report, unlike
-    // the reporter's own name/address/email above.
     private val _authorityEmail = MutableStateFlow("")
     val authorityEmail: StateFlow<String> = _authorityEmail.asStateFlow()
 
@@ -29,6 +27,7 @@ internal class WitnessDetailsViewModel(
         viewModelScope.launch { _name.value = repository.name.first() }
         viewModelScope.launch { _address.value = repository.address.first() }
         viewModelScope.launch { _email.value = repository.email.first() }
+        viewModelScope.launch { _authorityEmail.value = repository.authorityEmail.first() }
     }
 
     fun onNameChanged(value: String) {
@@ -48,5 +47,6 @@ internal class WitnessDetailsViewModel(
 
     fun onAuthorityEmailChanged(value: String) {
         _authorityEmail.value = value
+        viewModelScope.launch { repository.saveAuthorityEmail(value) }
     }
 }

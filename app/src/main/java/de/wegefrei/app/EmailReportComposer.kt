@@ -52,12 +52,16 @@ fun buildReportEmailIntent(
     subject: String,
     body: String,
     attachmentUris: List<Uri>,
+    recipientEmail: String?,
 ): Intent {
     val action = if (attachmentUris.isEmpty()) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
     return Intent(action).apply {
         type = "message/rfc822"
         putExtra(Intent.EXTRA_SUBJECT, subject)
         putExtra(Intent.EXTRA_TEXT, body)
+        if (!recipientEmail.isNullOrBlank()) {
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(recipientEmail))
+        }
         if (attachmentUris.isNotEmpty()) {
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachmentUris))
         }

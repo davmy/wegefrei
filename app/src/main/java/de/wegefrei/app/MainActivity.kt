@@ -63,7 +63,8 @@ private fun WegefreiNavHost() {
                     val attachmentUris = attachmentPreparer.prepareAttachments(reportDetails.photoUris)
                     val subject = buildReportEmailSubject()
                     val body = buildReportEmailBody(witnessDetails, reportDetails)
-                    val intent = buildReportEmailIntent(subject, body, attachmentUris)
+                    val intent =
+                        buildReportEmailIntent(subject, body, attachmentUris, witnessDetails.authorityEmail)
 
                     try {
                         context.startActivity(
