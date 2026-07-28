@@ -5,7 +5,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EmailValidationTest {
-
     @Test
     fun `isValidEmail accepts a plausible email address`() {
         assertTrue(isValidEmail("max@example.com"))

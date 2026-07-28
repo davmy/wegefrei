@@ -15,24 +15,25 @@ interface PhotoLocationExtractor {
 internal class ExifPhotoLocationExtractor(
     private val context: Context,
 ) : PhotoLocationExtractor {
-
-    override suspend fun extractLocation(uri: Uri): LatLng? = withContext(Dispatchers.IO) {
-        val originalUri = try {
-            MediaStore.setRequireOriginal(uri)
-        } catch (e: UnsupportedOperationException) {
-            uri
-        }
-
-        try {
-            context.contentResolver.openInputStream(originalUri)?.use { stream ->
-                ExifInterface(stream).latLong?.let { latLong ->
-                    LatLng(latitude = latLong[0], longitude = latLong[1])
+    override suspend fun extractLocation(uri: Uri): LatLng? =
+        withContext(Dispatchers.IO) {
+            val originalUri =
+                try {
+                    MediaStore.setRequireOriginal(uri)
+                } catch (e: UnsupportedOperationException) {
+                    uri
                 }
+
+            try {
+                context.contentResolver.openInputStream(originalUri)?.use { stream ->
+                    ExifInterface(stream).latLong?.let { latLong ->
+                        LatLng(latitude = latLong[0], longitude = latLong[1])
+                    }
+                }
+            } catch (e: IOException) {
+                null
+            } catch (e: SecurityException) {
+                null
             }
-        } catch (e: IOException) {
-            null
-        } catch (e: SecurityException) {
-            null
         }
-    }
 }

@@ -17,19 +17,25 @@ internal fun parseNominatimDisplayName(json: String): String? =
     }
 
 interface AddressLookupService {
-    suspend fun reverseGeocode(latitude: Double, longitude: Double): String?
+    suspend fun reverseGeocode(
+        latitude: Double,
+        longitude: Double,
+    ): String?
 }
 
 internal class NominatimAddressLookupService(
     private val baseUrl: String = "https://nominatim.openstreetmap.org",
 ) : AddressLookupService {
-
-    override suspend fun reverseGeocode(latitude: Double, longitude: Double): String? =
+    override suspend fun reverseGeocode(
+        latitude: Double,
+        longitude: Double,
+    ): String? =
         withContext(Dispatchers.IO) {
             try {
-                val url = URL(
-                    "$baseUrl/reverse?format=json&lat=$latitude&lon=$longitude",
-                )
+                val url =
+                    URL(
+                        "$baseUrl/reverse?format=json&lat=$latitude&lon=$longitude",
+                    )
                 val connection = url.openConnection() as HttpURLConnection
                 connection.setRequestProperty("User-Agent", "wegefrei-android/1.0 (+https://github.com/davmy/wegefrei)")
                 connection.connectTimeout = 10_000

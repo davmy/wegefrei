@@ -34,19 +34,19 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import de.wegefrei.app.core.designsystem.rememberTouchedFieldState
 
 @Composable
-internal fun WitnessDetailsRoot(
-    onBackRequested: () -> Unit,
-) {
+internal fun WitnessDetailsRoot(onBackRequested: () -> Unit) {
     val context = LocalContext.current.applicationContext
-    val viewModel: WitnessDetailsViewModel = viewModel(
-        factory = remember {
-            viewModelFactory {
-                initializer {
-                    WitnessDetailsViewModel(DataStoreWitnessDetailsRepository(context))
-                }
-            }
-        },
-    )
+    val viewModel: WitnessDetailsViewModel =
+        viewModel(
+            factory =
+                remember {
+                    viewModelFactory {
+                        initializer {
+                            WitnessDetailsViewModel(DataStoreWitnessDetailsRepository(context))
+                        }
+                    }
+                },
+        )
 
     val name by viewModel.name.collectAsState()
     val address by viewModel.address.collectAsState()
@@ -91,22 +91,24 @@ internal fun WitnessDetailsScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-                .imePadding(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             WitnessTextField(
@@ -167,8 +169,9 @@ private fun WitnessTextField(
         label = { Text(text = if (required) stringResource(R.string.label_required_suffix, label) else label) },
         isError = errorMessage != null,
         supportingText = errorMessage?.let { message -> { Text(text = message) } },
-        modifier = modifier
-            .fillMaxWidth()
-            .then(touchedField.modifier),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .then(touchedField.modifier),
     )
 }

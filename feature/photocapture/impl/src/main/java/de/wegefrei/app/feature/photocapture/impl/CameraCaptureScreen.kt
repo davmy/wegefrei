@@ -20,8 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -30,9 +30,7 @@ import java.util.Locale
 private const val TAG = "CameraCaptureScreen"
 
 @Composable
-internal fun CameraCaptureScreen(
-    onPhotoCaptured: (Uri) -> Unit,
-) {
+internal fun CameraCaptureScreen(onPhotoCaptured: (Uri) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -62,9 +60,10 @@ internal fun CameraCaptureScreen(
                     cameraProviderFuture.addListener(
                         {
                             val cameraProvider = cameraProviderFuture.get()
-                            val preview = Preview.Builder().build().also {
-                                it.surfaceProvider = previewView.surfaceProvider
-                            }
+                            val preview =
+                                Preview.Builder().build().also {
+                                    it.surfaceProvider = previewView.surfaceProvider
+                                }
                             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                             try {

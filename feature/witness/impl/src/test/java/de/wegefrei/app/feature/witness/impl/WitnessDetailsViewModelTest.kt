@@ -15,7 +15,6 @@ import org.robolectric.RobolectricTestRunner
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class WitnessDetailsViewModelTest {
-
     private val repository = FakeWitnessDetailsRepository()
     private lateinit var viewModel: WitnessDetailsViewModel
 
@@ -71,11 +70,12 @@ class WitnessDetailsViewModelTest {
 
     @Test
     fun `loads persisted values from the repository on init`() {
-        val prefilled = FakeWitnessDetailsRepository(
-            initialName = "Erika Musterfrau",
-            initialAddress = "Beispielweg 2",
-            initialEmail = "erika@example.com",
-        )
+        val prefilled =
+            FakeWitnessDetailsRepository(
+                initialName = "Erika Musterfrau",
+                initialAddress = "Beispielweg 2",
+                initialEmail = "erika@example.com",
+            )
 
         val loadedViewModel = WitnessDetailsViewModel(prefilled)
 

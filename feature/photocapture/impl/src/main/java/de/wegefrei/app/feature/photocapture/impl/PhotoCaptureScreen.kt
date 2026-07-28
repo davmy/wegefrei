@@ -10,13 +10,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -67,45 +67,84 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
 
 // Lists can contain the same photo more than once (picked or captured twice), so the
 // index must be part of the key — using uri.toString() alone crashes LazyRow with a
 // duplicate-key error.
-internal fun photoThumbnailKey(index: Int, uri: Uri): String = "$index-$uri"
+internal fun photoThumbnailKey(
+    index: Int,
+    uri: Uri,
+): String = "$index-$uri"
 
-internal val germanCarBrands = listOf(
-    "Volkswagen", "Mercedes-Benz", "BMW", "Audi", "Opel", "Škoda", "Ford",
-    "Seat", "Renault", "Hyundai", "Kia", "Toyota", "Peugeot", "Fiat",
-    "Volvo", "Mini", "Citroën", "Dacia", "Nissan", "Mazda", "Porsche",
-    "Smart", "Honda", "Suzuki", "Tesla",
-)
+internal val germanCarBrands =
+    listOf(
+        "Volkswagen",
+        "Mercedes-Benz",
+        "BMW",
+        "Audi",
+        "Opel",
+        "Škoda",
+        "Ford",
+        "Seat",
+        "Renault",
+        "Hyundai",
+        "Kia",
+        "Toyota",
+        "Peugeot",
+        "Fiat",
+        "Volvo",
+        "Mini",
+        "Citroën",
+        "Dacia",
+        "Nissan",
+        "Mazda",
+        "Porsche",
+        "Smart",
+        "Honda",
+        "Suzuki",
+        "Tesla",
+    )
 
-internal val germanCarColors = listOf(
-    "Schwarz", "Weiß", "Silber", "Grau", "Blau", "Rot", "Braun", "Grün",
-    "Beige", "Gelb", "Orange", "Violett", "Gold", "Bronze",
-)
+internal val germanCarColors =
+    listOf(
+        "Schwarz",
+        "Weiß",
+        "Silber",
+        "Grau",
+        "Blau",
+        "Rot",
+        "Braun",
+        "Grün",
+        "Beige",
+        "Gelb",
+        "Orange",
+        "Violett",
+        "Gold",
+        "Bronze",
+    )
 
-internal val germanTrafficViolations = listOf(
-    "Parken auf Gehweg",
-    "Parken im absoluten Halteverbot",
-    "Parken weniger als 5 Meter von Kreuzung",
-    "Parken weniger als 5 Meter von Einmündung",
-    "Parken auf Radweg (Zeichen 237)",
-    "Parken auf Radfahrstreifen",
-    "Parken auf Geh- und Radweg (Zeichen 240 / 241)",
-    "Parken auf Sperrfläche",
-    "Parken auf unbeschildertem Radweg",
-    "Parken in verkehrsberuhigten Bereich (Zeichen 325.1)",
-    "Parken in eingeschränktem Halteverbot (Zeichen 286)",
-)
+internal val germanTrafficViolations =
+    listOf(
+        "Parken auf Gehweg",
+        "Parken im absoluten Halteverbot",
+        "Parken weniger als 5 Meter von Kreuzung",
+        "Parken weniger als 5 Meter von Einmündung",
+        "Parken auf Radweg (Zeichen 237)",
+        "Parken auf Radfahrstreifen",
+        "Parken auf Geh- und Radweg (Zeichen 240 / 241)",
+        "Parken auf Sperrfläche",
+        "Parken auf unbeschildertem Radweg",
+        "Parken in verkehrsberuhigten Bereich (Zeichen 325.1)",
+        "Parken in eingeschränktem Halteverbot (Zeichen 286)",
+    )
 
 internal fun trafficViolationOptions(parkOrHalt: String): List<String> =
     germanTrafficViolations.map { it.replaceFirst("Parken", parkOrHalt) }
@@ -157,23 +196,25 @@ internal fun PhotoCaptureRoot(
         viewModel.onPhotoTimestampsExtracted(timestamps)
     }
 
-    val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = { results ->
-            val granted = results[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                results[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-            if (granted) {
-                coroutineScope.launch {
-                    lookupAndReportAddress(
-                        setLoading = { isLookingUpAddressFromLocation = it },
-                        onAddressFound = viewModel::onCurrentLocationAddressReceived,
-                        fetchLatLng = { currentLocationProvider.getCurrentLocation() },
-                        addressLookupService = addressLookupService,
-                    )
+    val locationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = { results ->
+                val granted =
+                    results[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                        results[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+                if (granted) {
+                    coroutineScope.launch {
+                        lookupAndReportAddress(
+                            setLoading = { isLookingUpAddressFromLocation = it },
+                            onAddressFound = viewModel::onCurrentLocationAddressReceived,
+                            fetchLatLng = { currentLocationProvider.getCurrentLocation() },
+                            addressLookupService = addressLookupService,
+                        )
+                    }
                 }
-            }
-        },
-    )
+            },
+        )
 
     if (showCamera) {
         CameraCaptureScreen(
@@ -287,15 +328,17 @@ internal fun PhotoCaptureScreen(
     val canAddMore = remainingSlots > 0
     var previewUri by remember { mutableStateOf<Uri?>(null) }
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = remainingSlots.coerceAtLeast(2)),
-        onResult = onImagesPicked,
-    )
+    val galleryLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = remainingSlots.coerceAtLeast(2)),
+            onResult = onImagesPicked,
+        )
 
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { granted -> if (granted) onTakePhotoRequested() },
-    )
+    val cameraPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { granted -> if (granted) onTakePhotoRequested() },
+        )
 
     var showMenu by remember { mutableStateOf(false) }
     var showParkOrHaltInfo by remember { mutableStateOf(false) }
@@ -321,22 +364,24 @@ internal fun PhotoCaptureScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-                .imePadding(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -457,9 +502,10 @@ internal fun PhotoCaptureScreen(
             // The underlying state/committed value always stays "Parken"/"Halten" — that's
             // the exact legal-German text that ends up in the report email regardless of the
             // app's display locale. Only the on-screen word is translated.
-            val parkOrHaltDisplayWord = stringResource(
-                if (parkOrHaltText == "Parken") R.string.word_parking else R.string.word_halting,
-            )
+            val parkOrHaltDisplayWord =
+                stringResource(
+                    if (parkOrHaltText == "Parken") R.string.word_parking else R.string.word_halting,
+                )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -547,10 +593,14 @@ internal fun PhotoCaptureScreen(
                         ),
                     )
                 },
-                enabled = licensePlateText.isNotBlank() && makeText.isNotBlank() && colorText.isNotBlank() &&
-                    violationText.isNotBlank() && obstructionText.isNotBlank() &&
-                    (obstructionText != "Ja" || obstructionDetailsText.isNotBlank()) &&
-                    addressText.isNotBlank(),
+                enabled =
+                    licensePlateText.isNotBlank() &&
+                        makeText.isNotBlank() &&
+                        colorText.isNotBlank() &&
+                        violationText.isNotBlank() &&
+                        obstructionText.isNotBlank() &&
+                        (obstructionText != "Ja" || obstructionDetailsText.isNotBlank()) &&
+                        addressText.isNotBlank(),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(R.string.button_next))
@@ -585,12 +635,15 @@ private fun IncidentDateTimePicker(
     }
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = incidentDateTime.toLocalDate()
-                .atStartOfDay(ZoneOffset.UTC)
-                .toInstant()
-                .toEpochMilli(),
-        )
+        val datePickerState =
+            rememberDatePickerState(
+                initialSelectedDateMillis =
+                    incidentDateTime
+                        .toLocalDate()
+                        .atStartOfDay(ZoneOffset.UTC)
+                        .toInstant()
+                        .toEpochMilli(),
+            )
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
@@ -598,9 +651,11 @@ private fun IncidentDateTimePicker(
                     onClick = {
                         val selectedMillis = datePickerState.selectedDateMillis
                         if (selectedMillis != null) {
-                            pendingDate = Instant.ofEpochMilli(selectedMillis)
-                                .atZone(ZoneOffset.UTC)
-                                .toLocalDate()
+                            pendingDate =
+                                Instant
+                                    .ofEpochMilli(selectedMillis)
+                                    .atZone(ZoneOffset.UTC)
+                                    .toLocalDate()
                             showDatePicker = false
                             showTimePicker = true
                         } else {
@@ -623,11 +678,12 @@ private fun IncidentDateTimePicker(
 
     val datePendingTime = pendingDate
     if (showTimePicker && datePendingTime != null) {
-        val timePickerState = rememberTimePickerState(
-            initialHour = incidentDateTime.hour,
-            initialMinute = incidentDateTime.minute,
-            is24Hour = true,
-        )
+        val timePickerState =
+            rememberTimePickerState(
+                initialHour = incidentDateTime.hour,
+                initialMinute = incidentDateTime.minute,
+                is24Hour = true,
+            )
         AlertDialog(
             onDismissRequest = { showTimePicker = false },
             confirmButton = {
@@ -665,19 +721,21 @@ private fun PhotoThumbnail(
             model = uri,
             contentDescription = stringResource(R.string.cd_photo_thumbnail),
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(8.dp))
-                .clickable(onClick = onClick),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = onClick),
         )
         Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(4.dp)
-                .size(20.dp)
-                .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.6f))
-                .clickable(onClick = onRemove),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.6f))
+                    .clickable(onClick = onRemove),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -699,10 +757,11 @@ private fun PhotoPreviewDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-                .clickable(onClick = onDismiss),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .clickable(onClick = onDismiss),
         ) {
             AsyncImage(
                 model = uri,
@@ -711,13 +770,14 @@ private fun PhotoPreviewDialog(
                 modifier = Modifier.fillMaxSize(),
             )
             Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(16.dp)
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.6f))
-                    .clickable(onClick = onDismiss),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .clickable(onClick = onDismiss),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(

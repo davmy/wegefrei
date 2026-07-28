@@ -12,18 +12,23 @@ private val REPORT_DATE_TIME_FORMATTER: DateTimeFormatter =
 
 fun buildReportEmailSubject(): String = "Anzeige einer Verkehrsordnungswidrigkeit"
 
-fun buildReportEmailBody(witness: WitnessDetails, report: ReportDetails): String {
+fun buildReportEmailBody(
+    witness: WitnessDetails,
+    report: ReportDetails,
+): String {
     val incidentDateTime = report.incidentDateTime.format(REPORT_DATE_TIME_FORMATTER)
-    val obstructionLine = if (report.obstruction != null) {
-        "\n            Angaben zu einer konkreten Verkehrsbehinderung oder -gefährdung: ${report.obstruction}"
-    } else {
-        ""
-    }
-    val durationLine = if (report.durationOver60Minutes != null) {
-        "\n            Standzeit länger als 60 Minuten: ${report.durationOver60Minutes}"
-    } else {
-        ""
-    }
+    val obstructionLine =
+        if (report.obstruction != null) {
+            "\n            Angaben zu einer konkreten Verkehrsbehinderung oder -gefährdung: ${report.obstruction}"
+        } else {
+            ""
+        }
+    val durationLine =
+        if (report.durationOver60Minutes != null) {
+            "\n            Standzeit länger als 60 Minuten: ${report.durationOver60Minutes}"
+        } else {
+            ""
+        }
     return """
         Sehr geehrte Damen und Herren,
 
@@ -40,10 +45,14 @@ fun buildReportEmailBody(witness: WitnessDetails, report: ReportDetails): String
 
         Mit freundlichen Grüßen
         ${witness.name}
-    """.trimIndent()
+        """.trimIndent()
 }
 
-fun buildReportEmailIntent(subject: String, body: String, attachmentUris: List<Uri>): Intent {
+fun buildReportEmailIntent(
+    subject: String,
+    body: String,
+    attachmentUris: List<Uri>,
+): Intent {
     val action = if (attachmentUris.isEmpty()) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE
     return Intent(action).apply {
         type = "message/rfc822"

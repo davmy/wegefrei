@@ -5,7 +5,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class WitnessDetailsCompletionTest {
-
     @Test
     fun `isWitnessDetailsRecordComplete is true when all fields are present and email is valid`() {
         assertTrue(isWitnessDetailsRecordComplete("Max Mustermann", "Musterstraße 1", "max@example.com"))

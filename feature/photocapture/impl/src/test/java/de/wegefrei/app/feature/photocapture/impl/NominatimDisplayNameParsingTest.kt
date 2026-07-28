@@ -8,7 +8,6 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class NominatimDisplayNameParsingTest {
-
     @Test
     fun `parseNominatimDisplayName extracts display_name from a successful response`() {
         val json = """{"display_name":"Alexanderplatz, Mitte, Berlin, Deutschland"}"""

@@ -1,17 +1,16 @@
 package de.wegefrei.app.feature.photocapture.impl
 
 import android.net.Uri
-import java.time.Duration
-import java.time.LocalDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.Duration
+import java.time.LocalDateTime
 
 @RunWith(RobolectricTestRunner::class)
 class PhotoCaptureViewModelTest {
-
     private val viewModel = PhotoCaptureViewModel()
 
     @Test
@@ -182,8 +181,10 @@ class PhotoCaptureViewModelTest {
 
         // Tolerance avoids flakiness from the truncation-to-minute and any tiny
         // scheduling delay between this call and reading LocalDateTime.now() here.
-        val minutesDifference = Duration.between(viewModel.incidentDateTime.value, LocalDateTime.now())
-            .toMinutes()
+        val minutesDifference =
+            Duration
+                .between(viewModel.incidentDateTime.value, LocalDateTime.now())
+                .toMinutes()
         assertTrue(minutesDifference in -1..1)
     }
 
