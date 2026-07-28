@@ -1,0 +1,27 @@
+Categories:
+  - Internet
+License: GPL-3.0-only
+IssueTracker: https://github.com/davmy/wegefrei/issues
+
+Description: |-
+  Wegefrei helps you report illegally parked vehicles in Germany. Take a
+  photo of the vehicle - the app works out where and when it was taken from
+  the photo's location/EXIF data, lets you fill in the vehicle and violation
+  details, and generates a pre-filled report email, with the photo attached,
+  addressed to the local authority.
+
+  Location lookups for the incident address use the public Nominatim/
+  OpenStreetMap reverse-geocoding service.
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: 0.1.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1
