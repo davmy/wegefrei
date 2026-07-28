@@ -694,7 +694,11 @@ private fun IncidentDateTimePicker(
                 }
             },
         ) {
-            DatePicker(state = datePickerState)
+            // No keyboard-entry toggle: manually typing a date bypasses the calendar's grayed-out
+            // future days and instead surfaces Material3's own generic "date not allowed" text
+            // (which isn't easily overridden - it's read directly from the material3 library's
+            // resources, not something this app's string resources can shadow).
+            DatePicker(state = datePickerState, showModeToggle = false)
         }
     }
 
